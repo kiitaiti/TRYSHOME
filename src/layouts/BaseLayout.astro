@@ -1,0 +1,155 @@
+---
+import '@/styles/global.css';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import MobileBar from '@/components/MobileBar.astro';
+import { site } from '@/data/site';
+import { usingSampleData } from '@/lib/microcms';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  noindex?: boolean;
+  /** トップページのみ true（ロード演出を有効化） */
+  isHome?: boolean;
+}
+const {
+  title,
+  description = site.description,
+  ogImage = '/ogp.png',
+  ogType = 'website',
+  noindex = false,
+  isHome = false,
+} = Astro.props;
+
+const fullTitle = title ? `${title}｜${site.brand}（${site.corp}）` : `${site.brand}｜東京都町田市のリフォーム会社（${site.corp}）`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImageUrl = new URL(ogImage, Astro.site);
+---
+
+<!doctype html>
+<html lang="ja" class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#f07e1a" />
+    <meta property="og:site_name" content={`${site.brand}（${site.corp}）`} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content="ja_JP" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Montserrat:wght@600;700&display=swap"
+    />
+    {
+      isHome && (
+        <>
+          <link rel="preload" as="image" href="/loader/house-old.webp" />
+          <link rel="preload" as="image" href="/loader/house-new.webp" />
+          <link rel="preload" as="image" href="/loader/sugitora.webp" />
+        </>
+      )
+    }
+    <script is:inline>
+      // JS が動く環境であることを最初に宣言（no-js 用スタイルを解除）
+      document.documentElement.classList.remove('no-js');
+      document.documentElement.classList.add('js');
+    </script>
+    {
+      isHome && (
+        <script is:inline>
+          // ロード演出は「同一タブで初回のみ」「動きを減らす設定では省略」。描画前に判定してチラつきを防ぐ
+          (function () {
+            try {
+              var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+              var seen = sessionStorage.getItem('trys-loader-seen') === '1';
+              if (!reduce && !seen) document.documentElement.classList.add('is-loading');
+            } catch (e) {
+              /* sessionStorage が使えない場合は演出を省略 */
+            }
+          })();
+        </script>
+      )
+    }
+    <script is:inline type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'HomeAndConstructionBusiness',
+      name: `${site.brand}（${site.corp}）`,
+      url: Astro.site?.toString(),
+      telephone: site.tel,
+      faxNumber: site.fax,
+      address: {
+        '@type': 'PostalAddress',
+        postalCode: site.postal.replace('〒', ''),
+        addressRegion: '東京都',
+        addressLocality: '町田市',
+        streetAddress: '高ケ坂3-13-13',
+        addressCountry: 'JP',
+      },
+      areaServed: site.serviceAreaList,
+      sameAs: [site.instagram],
+    })} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">本文へ移動</a>
+    {
+      usingSampleData && (
+        <div class="sample-banner" role="status">
+          サンプルデータ表示中：microCMS が未設定のため、お知らせ・施工実績は確認用のサンプルです（実在の案件ではありません）。
+        </div>
+      )
+    }
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+    <MobileBar />
+    <slot name="after-body" />
+    <script>
+      // スクロールで現れる要素
+      const els = document.querySelectorAll<HTMLElement>('.reveal');
+      if ('IntersectionObserver' in window && els.length) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.05 },
+        );
+        els.forEach((el) => io.observe(el));
+      } else {
+        els.forEach((el) => el.classList.add('is-in'));
+      }
+    </script>
+    <style>
+      .sample-banner {
+        background: #ffe9e9;
+        color: #a93226;
+        font-size: 13px;
+        text-align: center;
+        padding: 6px 12px;
+        border-bottom: 1px solid #f3b8b8;
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,233 @@
+[
+  {
+    "id": "sample-bath",
+    "title": "【サンプル】浴室をユニットバスへ交換",
+    "mainImage": {
+      "url": "/sample/photo-bath.jpg",
+      "width": 1440,
+      "height": 1440
+    },
+    "category": [
+      "水回り"
+    ],
+    "workContent": "ユニットバスへの交換",
+    "body": "<p>サンプルデータです。実際の施工実績はmicroCMSから登録・公開してください。写真は提供された施工写真を確認用に使用しています。場所・費用・工期などの情報は登録されていません。</p>",
+    "featured": true,
+    "publishedAt": "2026-06-01T00:00:00.000Z"
+  },
+  {
+    "id": "sample-floor",
+    "title": "【サンプル】フローリングの張り替え",
+    "mainImage": {
+      "url": "/sample/photo-floor.jpg",
+      "width": 1440,
+      "height": 1800
+    },
+    "category": [
+      "内装"
+    ],
+    "workContent": "フローリングの張り替え",
+    "gallery": [
+      {
+        "url": "/sample/photo-carpet.jpg",
+        "width": 1440,
+        "height": 1440
+      }
+    ],
+    "body": "<p>サンプルデータです。追加写真（複数画像）の表示確認用に別の部屋の写真を1枚追加しています。</p>",
+    "featured": true,
+    "publishedAt": "2026-05-20T00:00:00.000Z"
+  },
+  {
+    "id": "sample-ih",
+    "title": "【サンプル】IHクッキングヒーターの交換",
+    "mainImage": {
+      "url": "/sample/photo-ih.jpg",
+      "width": 1440,
+      "height": 1440
+    },
+    "category": [
+      "水回り"
+    ],
+    "buildingType": "戸建",
+    "workContent": "IHクッキングヒーターの交換",
+    "body": "<p>サンプルデータです。建物種別のみ入力した場合の表示確認用です。</p>",
+    "featured": true,
+    "publishedAt": "2026-05-10T00:00:00.000Z"
+  },
+  {
+    "id": "sample-toilet",
+    "title": "【サンプル】トイレの交換",
+    "mainImage": {
+      "url": "/sample/photo-toilet.jpg",
+      "width": 1440,
+      "height": 1440
+    },
+    "category": [
+      "水回り"
+    ],
+    "workContent": "トイレ本体の交換",
+    "body": "<p>サンプルデータです。</p>",
+    "featured": false,
+    "publishedAt": "2026-04-28T00:00:00.000Z"
+  },
+  {
+    "id": "sample-washstand",
+    "title": "【サンプル】洗面化粧台の交換",
+    "mainImage": {
+      "url": "/sample/photo-washstand.jpg",
+      "width": 1440,
+      "height": 1440
+    },
+    "category": [
+      "水回り"
+    ],
+    "workContent": "洗面化粧台の交換",
+    "body": "<p>サンプルデータです。</p>",
+    "featured": false,
+    "publishedAt": "2026-04-15T00:00:00.000Z"
+  },
+  {
+    "id": "sample-roof",
+    "title": "【サンプル】屋根の施工",
+    "mainImage": {
+      "url": "/sample/photo-roof.jpg",
+      "width": 1440,
+      "height": 1440
+    },
+    "category": [
+      "屋根外壁"
+    ],
+    "workContent": "屋根工事",
+    "body": "<p>サンプルデータです。</p>",
+    "featured": true,
+    "publishedAt": "2026-04-01T00:00:00.000Z"
+  },
+  {
+    "id": "sample-aircon",
+    "title": "【サンプル】エアコンの取付",
+    "mainImage": {
+      "url": "/sample/photo-aircon.jpg",
+      "width": 1440,
+      "height": 1440
+    },
+    "category": [
+      "住宅設備"
+    ],
+    "workContent": "エアコンの取付",
+    "body": "<p>サンプルデータです。</p>",
+    "featured": false,
+    "publishedAt": "2026-03-18T00:00:00.000Z"
+  },
+  {
+    "id": "sample-carpet",
+    "title": "【サンプル】カーペットの取り替え",
+    "mainImage": {
+      "url": "/sample/photo-carpet.jpg",
+      "width": 1440,
+      "height": 1440
+    },
+    "category": [
+      "内装"
+    ],
+    "workContent": "カーペットの取り替え",
+    "body": "<p>サンプルデータです。</p>",
+    "featured": false,
+    "publishedAt": "2026-03-05T00:00:00.000Z"
+  },
+  {
+    "id": "sample-beforeafter",
+    "title": "【サンプル】Before／After表示の確認用（イラスト）",
+    "mainImage": {
+      "url": "/sample/house-new.png",
+      "width": 900,
+      "height": 823
+    },
+    "category": [
+      "屋根外壁",
+      "エクステリア"
+    ],
+    "area": "（サンプル）町田市",
+    "buildingType": "戸建",
+    "workContent": "外装の全面改修（表示確認用のサンプル）",
+    "period": "（サンプル）約1か月",
+    "cost": "（サンプル）個別お見積り",
+    "beforeImage": {
+      "url": "/sample/house-old.png",
+      "width": 898,
+      "height": 900
+    },
+    "afterImage": {
+      "url": "/sample/house-new.png",
+      "width": 900,
+      "height": 823
+    },
+    "body": "<h2>見出しの表示例</h2><p>Before／Afterが両方登録されている場合の比較表示と、任意項目をすべて入力した場合の表示確認用サンプルです。実在の案件ではありません。</p><ul><li>リスト表示の例</li><li>リスト表示の例</li></ul>",
+    "featured": true,
+    "publishedAt": "2026-02-20T00:00:00.000Z"
+  },
+  {
+    "id": "sample-daiku",
+    "title": "【サンプル】造作収納の製作",
+    "mainImage": {
+      "url": "/sample/photo-floor.jpg",
+      "width": 1440,
+      "height": 1800
+    },
+    "category": [
+      "大工・造作"
+    ],
+    "workContent": "造作収納の製作",
+    "body": "<p>サンプルデータです（ページネーション確認用）。</p>",
+    "featured": false,
+    "publishedAt": "2026-02-01T00:00:00.000Z"
+  },
+  {
+    "id": "sample-ex",
+    "title": "【サンプル】玄関アプローチの工事",
+    "mainImage": {
+      "url": "/sample/house-new.png",
+      "width": 900,
+      "height": 823
+    },
+    "category": [
+      "エクステリア"
+    ],
+    "workContent": "玄関アプローチの工事",
+    "body": "<p>サンプルデータです（ページネーション確認用）。</p>",
+    "featured": false,
+    "publishedAt": "2026-01-20T00:00:00.000Z"
+  },
+  {
+    "id": "sample-naiso2",
+    "title": "【サンプル】クロスの張り替え",
+    "mainImage": {
+      "url": "/sample/photo-carpet.jpg",
+      "width": 1440,
+      "height": 1440
+    },
+    "category": [
+      "内装"
+    ],
+    "workContent": "クロスの張り替え",
+    "body": "<p>サンプルデータです（ページネーション確認用）。</p>",
+    "featured": false,
+    "publishedAt": "2026-01-10T00:00:00.000Z"
+  },
+  {
+    "id": "sample-mizu2",
+    "title": "【サンプル】浴室の改修",
+    "mainImage": {
+      "url": "/sample/photo-bath.jpg",
+      "width": 1440,
+      "height": 1440
+    },
+    "category": [
+      "水回り"
+    ],
+    "workContent": "浴室の改修",
+    "body": "<p>サンプルデータです（ページネーション確認用）。</p>",
+    "featured": false,
+    "publishedAt": "2025-12-20T00:00:00.000Z"
+  }
+]

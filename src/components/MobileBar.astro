@@ -1,0 +1,53 @@
+---
+import Icon from '@/components/Icon.astro';
+import { site } from '@/data/site';
+---
+
+<div class="mbar" aria-label="お問い合わせ導線">
+  <a href={site.telHref} class="mbar__tel"><Icon name="phone" /><span>電話で相談</span></a>
+  <a href="/contact/" class="mbar__form"><Icon name="mail" /><span>相談・見積りフォーム</span></a>
+</div>
+
+<style>
+  .mbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 800;
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    height: 60px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: #fff;
+  }
+  .mbar a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .mbar svg {
+    width: 22px;
+    height: 22px;
+  }
+  .mbar__tel {
+    background: #fff;
+    color: var(--c-black);
+  }
+  .mbar__tel svg {
+    color: var(--c-orange);
+  }
+  .mbar__form {
+    background: var(--c-orange);
+    color: #fff;
+  }
+  @media (min-width: 901px) {
+    .mbar {
+      display: none;
+    }
+  }
+</style>

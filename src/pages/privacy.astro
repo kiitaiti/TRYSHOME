@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import PageHero from '@/components/PageHero.astro';
+import { site } from '@/data/site';
+---
+<BaseLayout title="プライバシーポリシー" description={`${site.corp}（${site.brand}）の個人情報保護方針です。`}>
+  <PageHero title="プライバシーポリシー" en="PRIVACY POLICY" />
+  <Breadcrumb items={[{ label: 'プライバシーポリシー' }]} />
+  <section class="section">
+    <div class="container policy prose">
+      <p>{site.corp}（以下「当社」）は、お客さまから提供された個人情報（個人を識別できる情報）の重要性を認識し、個人情報の適正な収集、利用、保護のため以下の事項に取り組みます。</p>
+      <h2>1. 個人情報保護への取り組み</h2>
+      <p>当社は、個人情報の保護に関する法令およびその他の規範を遵守し、個人情報を適切に取り扱います。</p>
+      <h2>2. 個人情報の収集、利用</h2>
+      <p>個人情報を収集する際に、あらかじめ収集、利用目的をお知らせするとともに使用範囲を限定し、適切に取り扱います。また、収集した個人情報は、法令による場合等正当な理由がある場合を除き、第三者へ提供することをいたしません。</p>
+      <h2>3. 個人情報の管理、取り扱い</h2>
+      <p>個人情報の紛失、破壊、改ざん、漏えいなどを防止するため、不正アクセス等に対する適正な情報セキュリティ対策を講じ、安全に管理いたします。</p>
+      <h2>4. クッキー</h2>
+      <p>当社はオンライン・ビジターの皆さまから個人情報でない情報を入手するために、「クッキー」技術を利用する場合があります。「クッキー」とは、ビジターがウェブサイトを訪問した際に、ビジターのウェブブラウザーがビジターのコンピュータ上に示すテキスト情報ファイルのことです。ほとんどのブラウザーは自動的にクッキーを受け付けますがブラウザーの設定によっては、クッキーを受け付けなかったり、クッキーが送信された場合にその旨を表示したりするものもあります。</p>
+      <h2>5. お問い合わせフォームについて</h2>
+      <p>お問い合わせフォームからご入力いただいた情報は、お問い合わせへの回答およびご相談内容の確認のためにのみ利用します。</p>
+      <h2>6. お問い合わせ窓口</h2>
+      <p>{site.corp}<br />{site.postal} {site.address}<br />TEL {site.tel}</p>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .policy { max-width: 820px; }
+</style>

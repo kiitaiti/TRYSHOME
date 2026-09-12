@@ -1,0 +1,95 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import PageHero from '@/components/PageHero.astro';
+import SectionTitle from '@/components/SectionTitle.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import { features, flowSteps } from '@/data/content';
+import { site } from '@/data/site';
+import photoFloor from '@/assets/photos/photo-floor.jpg';
+import photoIh from '@/assets/photos/photo-ih.jpg';
+import photoRoof from '@/assets/photos/photo-roof.jpg';
+import photoAircon from '@/assets/photos/photo-aircon.jpg';
+const photos = [photoFloor, photoIh, photoRoof, photoAircon];
+const alts = ['張り替えたフローリング', 'IHクッキングヒーターの設置', '屋根の施工', 'エアコンの取付'];
+---
+<BaseLayout title="TRYS HOMEが選ばれる理由" description="TRYS HOME（株式会社TRYS）が選ばれる理由。職人歴10年以上のプロフェッショナル集団による高品質で丁寧な施工、建設業許可、設計から施工・住設資材販売までの一貫対応をご紹介します。">
+  <PageHero title="TRYS HOMEが選ばれる理由" en="REASON" image={photoFloor} />
+  <Breadcrumb items={[{ label: '選ばれる理由' }]} />
+  <section class="section">
+    <div class="container">
+      <SectionTitle en="REASON" ja="TRYS HOMEが選ばれる理由" tag="h2" />
+      <p class="lead">確かな技術と丁寧な施工で、<span class="em">長く安心して暮らせる住まい</span>を</p>
+      <div class="reasons">
+        {features.map((f, i) => (
+          <article class="reason reveal">
+            <div class="reason__img"><Image src={photos[i]} alt={alts[i]} width={720} height={500} loading={i === 0 ? 'eager' : 'lazy'} /></div>
+            <div class="reason__body">
+              <span class="reason__num">POINT {String(i + 1).padStart(2, '0')}</span>
+              <h3 class="reason__title">{f.title}</h3>
+              <p>{f.text}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div class="strength">
+        <div class="strength__sugi"><Sugitora pose="fists" width={200} /></div>
+        <blockquote class="strength__quote">
+          <p>{site.strengthText}</p>
+          <cite>— 既存公式サイト「会社案内・採用情報」より</cite>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+  <section class="section bg-gray">
+    <div class="container">
+      <SectionTitle en="FLOW" ja="ご相談から施工までの流れ" />
+      <ol class="flow">
+        {flowSteps.map((s, i) => (
+          <li class="flow__step reveal">
+            <span class="flow__num">{i + 1}</span>
+            <div><h3>{s.title}</h3><p>{s.text}</p></div>
+          </li>
+        ))}
+      </ol>
+      <div class="flow__sugi"><Sugitora pose="bow" width={130} /></div>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <SectionTitle en="MEMBERSHIP" ja="加盟団体・許認可" />
+      <ul class="member">
+        <li><strong>建設業許可</strong>{site.license}（{site.licenseDate}取得）</li>
+        {site.memberships.map((m) => <li><strong>加盟</strong>{m}</li>)}
+      </ul>
+    </div>
+  </section>
+  <CtaSection pose="omakase" />
+</BaseLayout>
+<style>
+  .reasons { display: grid; gap: 40px; }
+  .reason { display: grid; gap: 18px; align-items: center; }
+  .reason__img img { width: 100%; height: auto; border-radius: var(--radius-lg); aspect-ratio: 36/25; object-fit: cover; }
+  .reason__num { font-family: var(--font-en); font-weight: 700; color: var(--c-orange); letter-spacing: 0.12em; }
+  .reason__title { font-size: clamp(19px, 2.4vw, 24px); margin: 6px 0 10px; }
+  .strength { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; margin-top: 48px; background: var(--c-orange-light); border-radius: var(--radius-lg); padding: 24px; }
+  .strength__sugi { width: clamp(100px, 14vw, 170px); }
+  .strength__quote { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.8; }
+  .strength__quote cite { display: block; font-size: 12px; font-weight: 400; color: var(--c-muted); font-style: normal; margin-top: 8px; }
+  .flow { display: grid; gap: 12px; max-width: 760px; margin-inline: auto; }
+  .flow__step { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; background: #fff; border-radius: var(--radius); padding: 16px 20px; border: 1px solid var(--c-gray-line); }
+  .flow__num { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--c-orange); color: #fff; font-family: var(--font-en); font-weight: 700; font-size: 18px; }
+  .flow__step h3 { font-size: 17px; }
+  .flow__step p { font-size: 14px; color: var(--c-muted); }
+  .flow__sugi { width: 110px; margin: 16px auto 0; }
+  .member { display: grid; gap: 8px; max-width: 760px; margin-inline: auto; }
+  .member li { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 12px 16px; border: 1px solid var(--c-gray-line); border-radius: 6px; }
+  .member strong { color: var(--c-orange-dark); }
+  @media (min-width: 768px) {
+    .reason { grid-template-columns: 1fr 1.2fr; gap: 36px; }
+    .reason:nth-child(even) .reason__img { order: 2; }
+  }
+  @media (max-width: 600px) { .strength { grid-template-columns: 1fr; justify-items: center; } .member li { grid-template-columns: 1fr; gap: 2px; } }
+</style>

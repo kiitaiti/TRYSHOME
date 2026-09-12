@@ -1,0 +1,73 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import PageHero from '@/components/PageHero.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import Icon from '@/components/Icon.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import { reformCategories } from '@/data/reform';
+import heroPhoto from '@/assets/photos/photo-bath.jpg';
+---
+<BaseLayout title="リフォームメニュー" description="TRYS HOMEのリフォームメニュー。水回り・内装・屋根外壁塗装・エクステリア・大工造作・住宅設備など、住まいのお悩みに合わせてご相談いただけます。">
+  <PageHero title="リフォームメニュー" en="REFORM MENU" image={heroPhoto} />
+  <Breadcrumb items={[{ label: 'リフォームメニュー' }]} />
+  <section class="section">
+    <div class="container">
+      <div class="intro">
+        <div class="intro__sugi"><Sugitora pose="fists" width={170} loading="eager" /></div>
+        <div>
+          <p class="lead" style="text-align:left;margin-bottom:12px">住まいの<span class="em">お悩みの場所</span>から、リフォームメニューをお選びください</p>
+          <p>TRYS HOMEは、水回りや内装の部分的な工事から、屋根・外壁、大工工事まで幅広く対応しています。「どのメニューに当てはまるか分からない」という場合も、そのままご相談ください。</p>
+        </div>
+      </div>
+      <ul class="cat-nav" aria-label="メニュー内リンク">
+        {reformCategories.map((c) => <li><a href={`#${c.slug}`}><Icon name={c.icon} />{c.name}</a></li>)}
+      </ul>
+      <div class="list">
+        {reformCategories.map((c, i) => (
+          <article class="item reveal" id={c.slug}>
+            <div class="item__img"><Image src={c.photo} alt={c.photoAlt} width={720} height={500} loading={i < 2 ? 'eager' : 'lazy'} /></div>
+            <div class="item__body">
+              <p class="item__en">{c.en}</p>
+              <h2 class="item__title"><Icon name={c.icon} />{c.name}</h2>
+              <p class="item__lead">{c.lead}</p>
+              <p class="item__text">{c.description}</p>
+              <ul class="item__services">{c.services.slice(0, 4).map((s) => <li>{s}</li>)}</ul>
+              <a class="btn btn--outline" href={`/reform/${c.slug}/`}>{c.short}リフォームの詳細<span class="arrow"></span></a>
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="note text-center" style="margin-top:32px">工事内容により対応可否が異なる場合があります。価格は現地調査のうえ、個別にお見積りいたします。</p>
+    </div>
+  </section>
+  <CtaSection pose="omakase" />
+</BaseLayout>
+<style>
+  .intro { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; margin-bottom: 32px; }
+  .intro__sugi { width: clamp(90px, 14vw, 150px); }
+  .cat-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 48px; }
+  .cat-nav a { display: flex; align-items: center; gap: 10px; background: var(--c-gray-bg); border: 1px solid var(--c-gray-line); border-radius: 6px; padding: 12px 14px; font-weight: 700; font-size: 15px; }
+  .cat-nav svg { width: 24px; height: 24px; color: var(--c-orange); flex: none; }
+  .cat-nav a:hover { background: var(--c-orange-light); opacity: 1; }
+  .list { display: grid; gap: 48px; }
+  .item { display: grid; gap: 20px; align-items: center; scroll-margin-top: 90px; }
+  .item__img img { width: 100%; height: auto; border-radius: var(--radius-lg); aspect-ratio: 36 / 25; object-fit: cover; }
+  .item__en { font-family: var(--font-en); font-weight: 700; color: var(--c-orange); letter-spacing: 0.15em; font-size: 13px; }
+  .item__title { display: flex; align-items: center; gap: 10px; font-size: clamp(20px, 2.6vw, 26px); margin-top: 4px; }
+  .item__title svg { width: 30px; height: 30px; color: var(--c-orange); }
+  .item__lead { font-weight: 700; color: var(--c-orange-dark); margin-top: 8px; }
+  .item__text { font-size: 15px; margin-top: 8px; }
+  .item__services { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 18px; }
+  .item__services li { font-size: 13px; background: var(--c-orange-light); color: var(--c-orange-dark); padding: 4px 10px; border-radius: 4px; font-weight: 700; }
+  @media (min-width: 768px) {
+    .item { grid-template-columns: 1fr 1.15fr; gap: 40px; }
+    .item:nth-child(even) .item__img { order: 2; }
+  }
+  @media (max-width: 700px) {
+    .cat-nav { grid-template-columns: repeat(2, 1fr); }
+    .cat-nav a { font-size: 13px; padding: 10px; }
+    .intro { grid-template-columns: 1fr; justify-items: center; text-align: left; }
+  }
+</style>

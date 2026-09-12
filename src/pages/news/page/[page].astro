@@ -1,0 +1,11 @@
+---
+import NewsListPage from '@/components/NewsListPage.astro';
+import { getNews } from '@/lib/microcms';
+import { chunk, NEWS_PER_PAGE } from '@/lib/paginate';
+export async function getStaticPaths() {
+  const pages = chunk(await getNews(), NEWS_PER_PAGE);
+  return pages.slice(1).map((items, i) => ({ params: { page: String(i + 2) }, props: { items, page: i + 2, total: pages.length } }));
+}
+const { items, page, total } = Astro.props;
+---
+<NewsListPage items={items} page={page} total={total} />

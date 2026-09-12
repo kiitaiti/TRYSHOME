@@ -1,0 +1,332 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import PageHero from '@/components/PageHero.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import Icon from '@/components/Icon.astro';
+import { site } from '@/data/site';
+import { reformCategories } from '@/data/reform';
+---
+
+<BaseLayout title="お問い合わせ" description={`TRYS HOME（${site.corp}）へのリフォームのご相談・お見積り依頼はこちら。お電話（${site.tel}）またはフォームからお問い合わせください。`}>
+  <PageHero title="お問い合わせ" en="CONTACT" />
+  <Breadcrumb items={[{ label: 'お問い合わせ' }]} />
+
+  <section class="section">
+    <div class="container contact">
+      <div class="contact__intro">
+        <div class="contact__sugi"><Sugitora pose="omakase" width={200} loading="eager" /></div>
+        <div>
+          <p class="lead" style="text-align:left;margin-bottom:10px">リフォームのご相談・お見積りのご依頼は<br class="pc" />お電話またはフォームから</p>
+          <p>「まだ検討中」「概算だけ知りたい」という段階でもお気軽にどうぞ。内容を確認のうえ、担当者よりご連絡いたします。</p>
+        </div>
+      </div>
+
+      <div class="contact__tel">
+        <p class="contact__tel-label"><Icon name="phone" />お電話でのお問い合わせ</p>
+        <a class="contact__tel-number" href={site.telHref}>{site.tel}</a>
+        <p class="note">FAX {site.fax}</p>
+      </div>
+
+      <h2 class="bar-heading">お問い合わせフォーム</h2>
+      <p class="note" style="margin-bottom:20px"><span class="req">必須</span> は必ずご入力ください。</p>
+
+      <form id="contact-form" class="form" name="contact" method="POST" action="/contact/" data-netlify="true" netlify-honeypot="company-website" novalidate>
+        <input type="hidden" name="form-name" value="contact" />
+        <p class="hp" aria-hidden="true"><label>会社サイト（入力不要）<input name="company-website" tabindex="-1" autocomplete="off" /></label></p>
+
+        <div class="form__row">
+          <label for="f-name">お名前 <span class="req">必須</span></label>
+          <div><input id="f-name" name="name" type="text" required autocomplete="name" maxlength="60" placeholder="例）杉山 太郎" /><p class="form__err" data-err="name"></p></div>
+        </div>
+        <div class="form__row">
+          <label for="f-kana">ふりがな</label>
+          <div><input id="f-kana" name="kana" type="text" autocomplete="off" maxlength="60" placeholder="例）すぎやま たろう" /></div>
+        </div>
+        <div class="form__row">
+          <label for="f-tel">お電話番号 <span class="req">必須</span></label>
+          <div><input id="f-tel" name="tel" type="tel" required autocomplete="tel" inputmode="tel" maxlength="20" placeholder="例）042-719-0651" /><p class="form__err" data-err="tel"></p></div>
+        </div>
+        <div class="form__row">
+          <label for="f-email">メールアドレス <span class="req">必須</span></label>
+          <div><input id="f-email" name="email" type="email" required autocomplete="email" inputmode="email" maxlength="120" placeholder="例）example@example.com" /><p class="form__err" data-err="email"></p></div>
+        </div>
+        <div class="form__row">
+          <label for="f-address">ご住所（市区町村まで）</label>
+          <div><input id="f-address" name="address" type="text" autocomplete="address-level2" maxlength="120" placeholder="例）東京都町田市" /></div>
+        </div>
+        <div class="form__row">
+          <label for="f-category">ご相談内容の種類</label>
+          <div>
+            <select id="f-category" name="category">
+              <option value="">選択してください</option>
+              {reformCategories.map((c) => <option value={c.name}>{c.name}</option>)}
+              <option value="新築・その他建築工事">新築・その他建築工事</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+        </div>
+        <div class="form__row">
+          <label for="f-message">ご相談内容 <span class="req">必須</span></label>
+          <div><textarea id="f-message" name="message" rows="7" required maxlength="2000" placeholder="例）浴室が古くなってきたので、ユニットバスへの交換を検討しています。"></textarea><p class="form__err" data-err="message"></p></div>
+        </div>
+        <div class="form__row form__row--agree">
+          <div>
+            <label class="agree"><input type="checkbox" name="agree" value="同意する" required /> <a href="/privacy/" target="_blank" rel="noopener">プライバシーポリシー</a>に同意する <span class="req">必須</span></label>
+            <p class="form__err" data-err="agree"></p>
+          </div>
+        </div>
+
+        <div class="form__status" id="form-status" role="status" aria-live="polite"></div>
+
+        <div class="form__submit">
+          <button type="submit" class="btn btn--primary btn--lg" id="form-submit">送信する<span class="arrow"></span></button>
+        </div>
+      </form>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  if (form) {
+    const status = document.getElementById('form-status') as HTMLElement;
+    const submitBtn = document.getElementById('form-submit') as HTMLButtonElement;
+    const setErr = (name: string, msg: string) => {
+      const el = form.querySelector<HTMLElement>(`[data-err="${name}"]`);
+      const field = form.elements.namedItem(name) as HTMLElement | RadioNodeList | null;
+      if (el) el.textContent = msg;
+      const input = field instanceof RadioNodeList ? (field[0] as HTMLElement) : field;
+      if (input) {
+        input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+        input.classList.toggle('is-invalid', Boolean(msg));
+      }
+    };
+    const validate = (): boolean => {
+      let ok = true;
+      const v = (n: string) => ((form.elements.namedItem(n) as HTMLInputElement | null)?.value ?? '').trim();
+      setErr('name', ''); setErr('tel', ''); setErr('email', ''); setErr('message', ''); setErr('agree', '');
+      if (!v('name')) { setErr('name', 'お名前を入力してください。'); ok = false; }
+      const tel = v('tel');
+      if (!tel) { setErr('tel', 'お電話番号を入力してください。'); ok = false; }
+      else if (!/^[0-9０-９+\-()（）\s]{8,20}$/.test(tel)) { setErr('tel', 'お電話番号の形式をご確認ください。'); ok = false; }
+      const email = v('email');
+      if (!email) { setErr('email', 'メールアドレスを入力してください。'); ok = false; }
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr('email', 'メールアドレスの形式をご確認ください。'); ok = false; }
+      if (!v('message')) { setErr('message', 'ご相談内容を入力してください。'); ok = false; }
+      if (!(form.elements.namedItem('agree') as HTMLInputElement).checked) { setErr('agree', 'プライバシーポリシーへの同意が必要です。'); ok = false; }
+      return ok;
+    };
+    const show = (type: 'sending' | 'success' | 'error', html: string) => {
+      status.className = `form__status is-${type}`;
+      status.innerHTML = html;
+      if (type !== 'sending') status.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    };
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!validate()) {
+        show('error', '入力内容に不備があります。赤字の項目をご確認ください。');
+        form.querySelector<HTMLElement>('.is-invalid')?.focus();
+        return;
+      }
+      submitBtn.disabled = true;
+      submitBtn.textContent = '送信中…';
+      show('sending', '送信しています。しばらくお待ちください…');
+      try {
+        const body = new URLSearchParams(new FormData(form) as unknown as Record<string, string>).toString();
+        const res = await fetch(form.getAttribute('action') || '/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body,
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        form.reset();
+        show('success', '<strong>送信が完了しました。</strong>お問い合わせありがとうございます。内容を確認のうえ、担当者よりご連絡いたします。');
+        submitBtn.textContent = '送信しました';
+      } catch (err) {
+        // 送信先（Netlify Forms）が未設定・エラーの場合は「送信できたように見せない」
+        show('error', `<strong>送信できませんでした。</strong>お手数ですが、お電話（<a href="${'tel:0427190651'}">042-719-0651</a>）でご連絡いただくか、時間をおいて再度お試しください。`);
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '送信する<span class="arrow"></span>';
+        console.error('[contact] 送信エラー', err);
+      }
+    });
+    form.querySelectorAll('input, textarea').forEach((el) => el.addEventListener('input', () => {
+      const n = (el as HTMLInputElement).name;
+      if (form.querySelector(`[data-err="${n}"]`)) setErr(n, '');
+    }));
+  }
+</script>
+
+<style>
+  .contact {
+    max-width: 900px;
+  }
+  .contact__intro {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  .contact__sugi {
+    width: clamp(100px, 16vw, 180px);
+  }
+  .contact__tel {
+    background: var(--c-orange-light);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    padding: 24px 16px;
+    margin-bottom: 40px;
+  }
+  .contact__tel-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+  }
+  .contact__tel-label svg {
+    width: 20px;
+    height: 20px;
+    color: var(--c-orange);
+  }
+  .contact__tel-number {
+    display: block;
+    font-family: var(--font-en);
+    font-size: clamp(32px, 6vw, 44px);
+    font-weight: 700;
+    color: var(--c-black);
+    line-height: 1.2;
+    margin: 4px 0;
+  }
+  .req {
+    display: inline-block;
+    background: #d9432f;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    line-height: 1.4;
+    vertical-align: middle;
+  }
+  .hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .form {
+    position: relative;
+    border-top: 1px solid var(--c-gray-line);
+  }
+  .form__row {
+    display: grid;
+    gap: 6px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--c-gray-line);
+  }
+  .form__row > label {
+    font-weight: 700;
+  }
+  .form input[type='text'],
+  .form input[type='tel'],
+  .form input[type='email'],
+  .form select,
+  .form textarea {
+    width: 100%;
+    font: inherit;
+    padding: 12px 14px;
+    border: 1px solid #cfcfcf;
+    border-radius: 6px;
+    background: #fff;
+    color: var(--c-text);
+  }
+  .form textarea {
+    resize: vertical;
+  }
+  .form .is-invalid {
+    border-color: #d9432f;
+    background: #fff6f5;
+  }
+  .form__err {
+    color: #d9432f;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 4px;
+    min-height: 0;
+  }
+  .form__err:empty {
+    display: none;
+  }
+  .agree {
+    font-weight: 700;
+  }
+  .agree a {
+    color: var(--c-orange-dark);
+    text-decoration: underline;
+  }
+  .form__status {
+    margin-top: 20px;
+    padding: 14px 18px;
+    border-radius: 6px;
+    font-size: 15px;
+  }
+  .form__status:empty {
+    display: none;
+  }
+  .form__status.is-sending {
+    background: var(--c-gray-bg);
+  }
+  .form__status.is-success {
+    background: #eaf7ee;
+    border: 1px solid #b7e0c4;
+    color: #1d6b3a;
+  }
+  .form__status.is-error {
+    background: #fdecea;
+    border: 1px solid #f3b8b8;
+    color: #a93226;
+  }
+  .form__status a {
+    text-decoration: underline;
+  }
+  .form__submit {
+    text-align: center;
+    margin-top: 24px;
+  }
+  .form__submit .btn {
+    min-width: 260px;
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+  }
+  .pc {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .form__row {
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .form__row > label {
+      padding-top: 12px;
+    }
+    .form__row--agree > div {
+      grid-column: 2;
+    }
+    .pc {
+      display: inline;
+    }
+  }
+  @media (max-width: 600px) {
+    .contact__intro {
+      grid-template-columns: 1fr;
+      justify-items: center;
+    }
+  }
+</style>

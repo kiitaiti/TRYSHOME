@@ -1,0 +1,83 @@
+---
+import { imgUrl, toArray, type WorkItem, usingSampleData } from '@/lib/microcms';
+interface Props { work: WorkItem; loading?: 'lazy' | 'eager' }
+const { work, loading = 'lazy' } = Astro.props;
+const cats = toArray(work.category);
+const w = 640, h = 480;
+const hasBA = Boolean(work.beforeImage && work.afterImage);
+---
+
+<a class="work-card" href={`/works/${work.id}/`}>
+  <div class="work-card__img">
+    <img src={imgUrl(work.mainImage, w, { height: h })} alt="" width={w} height={h} loading={loading} decoding="async" />
+    {hasBA && <span class="work-card__ba">BEFORE / AFTER</span>}
+  </div>
+  <div class="work-card__body">
+    <div class="work-card__tags">
+      {cats.map((c) => <span class="tag">{c}</span>)}
+      {usingSampleData && <span class="badge-sample">サンプル</span>}
+    </div>
+    <p class="work-card__title">{work.title}</p>
+    <p class="work-card__meta">
+      {work.workContent}{work.area && <span> ／ {work.area}</span>}
+    </p>
+  </div>
+</a>
+
+<style>
+  .work-card {
+    display: block;
+    background: #fff;
+    border: 1px solid var(--c-gray-line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s;
+  }
+  .work-card:hover {
+    opacity: 1;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+  .work-card__img {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    background: var(--c-gray-bg);
+  }
+  .work-card__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .work-card__ba {
+    position: absolute;
+    left: 0;
+    top: 12px;
+    background: var(--c-black);
+    color: #fff;
+    font-family: var(--font-en);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 0 4px 4px 0;
+  }
+  .work-card__body {
+    padding: 14px 16px 16px;
+  }
+  .work-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .work-card__title {
+    font-weight: 700;
+    line-height: 1.5;
+    font-size: 15px;
+  }
+  .work-card__meta {
+    font-size: 13px;
+    color: var(--c-muted);
+    margin-top: 4px;
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import PageHero from '@/components/PageHero.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import WorkCard from '@/components/WorkCard.astro';
+import Pagination from '@/components/Pagination.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import { reformCategories } from '@/data/reform';
+import type { WorkItem } from '@/lib/microcms';
+import heroPhoto from '@/assets/photos/photo-floor.jpg';
+
+interface Props { items: WorkItem[]; page: number; total: number; base: string; catSlug?: string; catName?: string }
+const { items, page, total, base, catSlug, catName } = Astro.props;
+const title = catName ? `施工実績：${catName}` : '施工実績';
+const crumbs = catName ? [{ label: '施工実績', href: '/works/' }, { label: catName }] : [{ label: '施工実績' }];
+---
+<BaseLayout title={page > 1 ? `${title}（${page}ページ目）` : title} description={`TRYS HOME（東京都町田市）の施工実績${catName ? `：${catName}` : ''}一覧。実際の施工写真とともにご紹介します。`} noindex={page > 1}>
+  <PageHero title="施工実績" en="WORKS" image={heroPhoto} />
+  <Breadcrumb items={crumbs} />
+  <section class="section">
+    <div class="container">
+      <div class="head">
+        <div class="head__sugi"><Sugitora pose="kirei" width={200} loading="eager" /></div>
+        <p class="lead" style="margin-bottom:0">TRYS HOMEが手がけた<span class="em">施工実績</span>をご紹介します</p>
+      </div>
+      <nav class="filter" aria-label="カテゴリーで絞り込み">
+        <a href="/works/" class:list={{ 'is-current': !catSlug }} aria-current={!catSlug ? 'page' : undefined}>すべて</a>
+        {reformCategories.map((c) => <a href={`/works/category/${c.slug}/`} class:list={{ 'is-current': catSlug === c.slug }} aria-current={catSlug === c.slug ? 'page' : undefined}>{c.worksCategory}</a>)}
+      </nav>
+      {items.length > 0 ? (
+        <div class="grid grid--3">{items.map((w, i) => <WorkCard work={w} loading={i < 3 ? 'eager' : 'lazy'} />)}</div>
+      ) : (
+        <p class="text-center note" style="padding:40px 0">該当する施工実績はまだありません。</p>
+      )}
+      <Pagination current={page} total={total} base={base} />
+    </div>
+  </section>
+  <CtaSection pose="fists" />
+</BaseLayout>
+<style>
+  .head { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 24px; }
+  .head__sugi { width: clamp(100px, 14vw, 170px); }
+  .head .lead { text-align: left; }
+  @media (max-width: 600px) { .head { grid-template-columns: 1fr; justify-items: center; } .head .lead { text-align: center; } }
+</style>

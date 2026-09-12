@@ -1,0 +1,9 @@
+---
+interface Props { en: string; ja: string; align?: 'center' | 'left'; id?: string; tag?: 'h1' | 'h2' }
+const { en, ja, align = 'center', id, tag = 'h2' } = Astro.props;
+const Tag = tag;
+---
+<Tag class:list={['section-title', { 'section-title--left': align === 'left' }]} id={id}>
+  <span class="section-title__en">{en}</span>
+  <span class="section-title__ja">{ja}</span>
+</Tag>

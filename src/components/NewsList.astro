@@ -1,0 +1,63 @@
+---
+import { formatDate, newsDate, toArray, type NewsItem, usingSampleData } from '@/lib/microcms';
+interface Props { items: NewsItem[] }
+const { items } = Astro.props;
+---
+<ul class="news-list">
+  {items.map((n) => (
+    <li>
+      <a href={`/news/${n.id}/`}>
+        <time datetime={newsDate(n)}>{formatDate(newsDate(n))}</time>
+        <span class="news-list__cat">{toArray(n.category)[0] ?? 'お知らせ'}</span>
+        <span class="news-list__title">{n.title}</span>
+        {usingSampleData && <span class="badge-sample">サンプル</span>}
+      </a>
+    </li>
+  ))}
+  {items.length === 0 && <li class="news-list__empty">現在お知らせはありません。</li>}
+</ul>
+<style>
+  .news-list li {
+    border-bottom: 1px solid var(--c-gray-line);
+  }
+  .news-list li:first-child {
+    border-top: 1px solid var(--c-gray-line);
+  }
+  .news-list a {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 16px;
+    padding: 16px 8px;
+  }
+  .news-list a:hover {
+    background: var(--c-orange-pale);
+    opacity: 1;
+  }
+  .news-list time {
+    font-family: var(--font-en);
+    font-weight: 700;
+    color: var(--c-muted);
+    letter-spacing: 0.04em;
+  }
+  .news-list__cat {
+    display: inline-block;
+    min-width: 88px;
+    text-align: center;
+    background: var(--c-orange);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+  .news-list__title {
+    flex: 1 1 320px;
+    font-weight: 500;
+  }
+  .news-list__empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--c-muted);
+  }
+</style>

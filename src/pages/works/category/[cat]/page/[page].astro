@@ -1,0 +1,15 @@
+---
+import WorksListPage from '@/components/WorksListPage.astro';
+import { getWorks, toArray } from '@/lib/microcms';
+import { reformCategories } from '@/data/reform';
+import { chunk, PER_PAGE } from '@/lib/paginate';
+export async function getStaticPaths() {
+  const works = await getWorks();
+  return reformCategories.flatMap((c) => {
+    const pages = chunk(works.filter((w) => toArray(w.category).includes(c.worksCategory)), PER_PAGE);
+    return pages.slice(1).map((items, i) => ({ params: { cat: c.slug, page: String(i + 2) }, props: { items, page: i + 2, total: pages.length, catSlug: c.slug, catName: c.worksCategory } }));
+  });
+}
+const { items, page, total, catSlug, catName } = Astro.props;
+---
+<WorksListPage items={items} page={page} total={total} base={`/works/category/${catSlug}/`} catSlug={catSlug} catName={catName} />

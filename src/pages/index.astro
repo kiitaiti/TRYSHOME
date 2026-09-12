@@ -1,0 +1,752 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Loader from '@/components/Loader.astro';
+import SectionTitle from '@/components/SectionTitle.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import Icon from '@/components/Icon.astro';
+import WorkCard from '@/components/WorkCard.astro';
+import NewsList from '@/components/NewsList.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import BeforeAfter from '@/components/BeforeAfter.astro';
+import { site } from '@/data/site';
+import { reformCategories } from '@/data/reform';
+import { flowSteps, features, faqs } from '@/data/content';
+import { getWorks, getNews, imgUrl } from '@/lib/microcms';
+import heroPhoto from '@/assets/photos/photo-bath.jpg';
+import heroPhoto2 from '@/assets/photos/photo-floor.jpg';
+import ceoPhoto from '@/assets/img/ceo.jpg';
+
+const works = await getWorks();
+const featured = works.filter((w) => w.featured).slice(0, 6);
+const topWorks = featured.length >= 3 ? featured : works.slice(0, 6);
+const baWork = works.find((w) => w.beforeImage && w.afterImage);
+const news = (await getNews()).slice(0, 3);
+---
+
+<BaseLayout isHome description={site.description}>
+  <!-- 1. ファーストビュー -->
+  <section class="hero" aria-label="メインビジュアル">
+    <div class="hero__photos" aria-hidden="true">
+      <Image class="hero__photo hero__photo--1" src={heroPhoto} alt="" width={1400} height={1000} loading="eager" fetchpriority="high" />
+      <Image class="hero__photo hero__photo--2" src={heroPhoto2} alt="" width={800} height={1000} loading="eager" />
+    </div>
+    <div class="container--wide hero__inner">
+      <div class="hero__copy reveal is-in">
+        <p class="hero__badge">東京都町田市のリフォーム会社</p>
+        <h1 class="hero__title">住まいが変わる。<br />毎日が変わる。</h1>
+        <p class="hero__sub">住まいのリフォーム、<strong>TRYS HOME</strong>にお任せ。</p>
+        <p class="hero__text">
+          水回り・内装・屋根外壁・エクステリアまで。<br class="pc" />
+          職人歴10年以上のプロフェッショナル集団が、高品質で丁寧な施工でお応えします。
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--primary btn--lg" href="/contact/"><Icon name="mail" />ご相談・お見積り</a>
+          <a class="btn btn--outline" href="/reform/">リフォームメニューを見る<span class="arrow"></span></a>
+        </div>
+      </div>
+      <div class="hero__sugi">
+        <Sugitora pose="omakase" width={330} loading="eager" float />
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. 住まいのお悩み・リフォームメニュー -->
+  <section class="section menu" aria-labelledby="menu-title">
+    <div class="container">
+      <div class="menu__head reveal">
+        <SectionTitle en="REFORM MENU" ja="リフォームメニュー" id="menu-title" />
+        <div class="menu__sugi"><Sugitora pose="fists" width={150} alt="" /></div>
+      </div>
+      <p class="lead reveal">「ここが古くなってきた」「使いにくい」<br class="sp" />——<span class="em">相談したい場所</span>から選べます</p>
+      <ul class="menu__grid">
+        {
+          reformCategories.map((c, i) => (
+            <li class="reveal" style={`transition-delay:${i * 60}ms`}>
+              <a class="menu-card" href={`/reform/${c.slug}/`}>
+                <div class="menu-card__img">
+                  <Image src={c.photo} alt={c.photoAlt} width={520} height={360} loading={i < 3 ? 'eager' : 'lazy'} />
+                </div>
+                <div class="menu-card__body">
+                  <span class="menu-card__icon"><Icon name={c.icon} /></span>
+                  <span class="menu-card__name">{c.name}</span>
+                  <span class="menu-card__lead">{c.lead}</span>
+                </div>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="note text-center" style="margin-top:20px">
+        上記以外の工事や「どこに頼めばいいか分からない」というご相談も承ります。新築のご相談も可能です。
+      </p>
+    </div>
+  </section>
+
+  <!-- 3. 施工実績 -->
+  <section class="section bg-gray works" aria-labelledby="works-title">
+    <div class="container">
+      <div class="works__head reveal">
+        <SectionTitle en="WORKS" ja="施工実績" id="works-title" />
+        <div class="works__sugi"><Sugitora pose="kirei" width={190} /></div>
+      </div>
+      <p class="lead reveal">TRYS HOMEが手がけた<span class="em">実際の施工写真</span>をご紹介します</p>
+      <div class="grid grid--3">
+        {topWorks.map((w, i) => <div class="reveal" style={`transition-delay:${i * 60}ms`}><WorkCard work={w} /></div>)}
+      </div>
+      {works.length === 0 && <p class="text-center note">施工実績は準備中です。</p>}
+      <div class="btn-row">
+        <a class="btn btn--outline" href="/works/">施工実績一覧はこちら<span class="arrow"></span></a>
+      </div>
+    </div>
+  </section>
+
+  {
+    baWork && (
+      <section class="section" aria-labelledby="ba-title">
+        <div class="container">
+          <h2 id="ba-title" class="sr-only">施工前後の変化</h2>
+          <div class="reveal">
+            <BeforeAfter
+              before={{ src: imgUrl(baWork.beforeImage!, 800, { height: 600 }), width: 800, height: 600 }}
+              after={{ src: imgUrl(baWork.afterImage!, 800, { height: 600 }), width: 800, height: 600 }}
+              alt={baWork.title}
+            />
+            <p class="text-center" style="margin-top:16px">
+              <a href={`/works/${baWork.id}/`} class="ba-link">{baWork.title} の詳細を見る ›</a>
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- 4. TRYS HOMEの特長 -->
+  <section class="section bg-orange-pale reason" aria-labelledby="reason-title">
+    <div class="container">
+      <SectionTitle en="REASON" ja="TRYS HOMEが選ばれる理由" id="reason-title" />
+      <div class="reason__wrap">
+        <ol class="reason__list">
+          {
+            features.map((f, i) => (
+              <li class="reason__item reveal" style={`transition-delay:${i * 80}ms`}>
+                <span class="reason__num">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <h3 class="reason__title">{f.title}</h3>
+                  <p class="reason__text">{f.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="reason__sugi">
+          <Sugitora pose="peace" width={260} float />
+          <p class="reason__bubble">職人の技術で<br />丁寧に仕上げます！</p>
+        </div>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn--outline" href="/about/">選ばれる理由をくわしく<span class="arrow"></span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 相談から施工までの流れ -->
+  <section class="section flow" aria-labelledby="flow-title">
+    <div class="container">
+      <div class="flow__head reveal">
+        <SectionTitle en="FLOW" ja="ご相談から施工までの流れ" id="flow-title" />
+        <div class="flow__sugi"><Sugitora pose="bow" width={130} alt="" /></div>
+      </div>
+      <ol class="flow__list">
+        {
+          flowSteps.map((s, i) => (
+            <li class="flow__step reveal" style={`transition-delay:${i * 60}ms`}>
+              <span class="flow__num">STEP {i + 1}</span>
+              <h3 class="flow__title">{s.title}</h3>
+              <p class="flow__text">{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- 6. 会社・代表の紹介 -->
+  <section class="section bg-gray company" aria-labelledby="company-title">
+    <div class="container company__inner">
+      <div class="company__photo reveal">
+        <Image src={ceoPhoto} alt={`${site.representative}`} width={720} height={543} loading="lazy" />
+        <p class="company__name">{site.representative}</p>
+      </div>
+      <div class="company__body reveal">
+        <SectionTitle en="COMPANY" ja="会社・代表のご紹介" id="company-title" align="left" />
+        <p class="company__greeting">{site.greeting}</p>
+        <dl class="company__dl">
+          <div><dt>会社名</dt><dd>{site.corp}（{site.brand}）</dd></div>
+          <div><dt>所在地</dt><dd>{site.postal} {site.address}</dd></div>
+          <div><dt>建設業許可</dt><dd>{site.license}</dd></div>
+          <div><dt>対応エリア</dt><dd>{site.serviceArea}</dd></div>
+        </dl>
+        <div class="btn-row" style="justify-content:flex-start">
+          <a class="btn btn--outline" href="/company/">会社概要・代表挨拶<span class="arrow"></span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. お知らせ -->
+  <section class="section-tight news" aria-labelledby="news-title">
+    <div class="container news__inner">
+      <SectionTitle en="NEWS" ja="お知らせ" id="news-title" align="left" />
+      <div class="news__list">
+        <NewsList items={news} />
+        <p class="news__more"><a href="/news/">お知らせ一覧 ›</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. よくある質問 -->
+  <section class="section bg-orange-light faq" aria-labelledby="faq-title">
+    <div class="container">
+      <SectionTitle en="FAQ" ja="よくあるご質問" id="faq-title" />
+      <div class="faq__list">
+        {
+          faqs.map((f) => (
+            <details class="faq__item reveal">
+              <summary><span class="faq__q">Q</span>{f.q}</summary>
+              <div class="faq__a"><span class="faq__a-mark">A</span><p>{f.a}</p></div>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. お問い合わせ -->
+  <CtaSection pose="wave" />
+
+  <Loader slot="after-body" />
+</BaseLayout>
+
+<style>
+  /* ---- hero ---- */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--c-orange-light);
+    isolation: isolate;
+  }
+  .hero__photos {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .hero__photo {
+    position: absolute;
+    object-fit: cover;
+  }
+  .hero__photo--1 {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .hero__photo--2 {
+    display: none;
+  }
+  .hero__photos::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.86) 45%, rgba(255, 255, 255, 0.35) 100%);
+  }
+  .hero__inner {
+    position: relative;
+    width: min(100% - 32px, var(--container-wide));
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: end;
+    min-height: 420px;
+    padding: 36px 0 0;
+  }
+  .hero__badge {
+    display: inline-block;
+    background: var(--c-orange);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+  }
+  .hero__title {
+    font-size: clamp(30px, 5.6vw, 54px);
+    line-height: 1.35;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--c-black);
+    margin-top: 14px;
+  }
+  .hero__sub {
+    margin-top: 12px;
+    font-size: clamp(17px, 2.4vw, 24px);
+    font-weight: 700;
+    color: var(--c-orange-dark);
+  }
+  .hero__sub strong {
+    font-family: var(--font-en);
+    letter-spacing: 0.02em;
+  }
+  .hero__text {
+    margin-top: 12px;
+    font-size: 15px;
+    max-width: 560px;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+  }
+  .hero__actions .btn svg {
+    width: 20px;
+    height: 20px;
+  }
+  .hero__sugi {
+    width: clamp(150px, 34vw, 320px);
+    justify-self: end;
+    margin-top: 8px;
+    margin-right: -8px;
+    align-self: end;
+  }
+  .pc {
+    display: none;
+  }
+  .sp {
+    display: inline;
+  }
+  @media (min-width: 768px) {
+    .hero__inner {
+      grid-template-columns: 1.4fr 1fr;
+      min-height: 560px;
+      padding: 56px 0 0;
+    }
+    .hero__copy {
+      padding-bottom: 56px;
+    }
+    .hero__photo--1 {
+      left: 30%;
+      width: 70%;
+    }
+    .hero__photo--2 {
+      display: block;
+      left: 0;
+      top: 0;
+      width: 30%;
+      height: 100%;
+    }
+    .hero__photos::after {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.9) 40%, rgba(255, 255, 255, 0.4) 70%, rgba(255, 255, 255, 0.15) 100%);
+    }
+    .pc {
+      display: inline;
+    }
+    .sp {
+      display: none;
+    }
+  }
+
+  /* ---- menu ---- */
+  .menu__head,
+  .works__head,
+  .flow__head {
+    position: relative;
+  }
+  .menu__sugi,
+  .flow__sugi {
+    position: absolute;
+    right: 0;
+    bottom: -8px;
+    width: clamp(70px, 10vw, 120px);
+  }
+  .works__sugi {
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    width: clamp(110px, 16vw, 190px);
+  }
+  @media (max-width: 700px) {
+    .menu__head,
+    .flow__head {
+      display: grid;
+      justify-items: center;
+    }
+    .menu__sugi,
+    .flow__sugi {
+      position: static;
+      width: 84px;
+      margin: -16px 0 4px;
+    }
+    .works__sugi {
+      width: 96px;
+      bottom: -18px;
+    }
+  }
+  .menu__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  .menu-card {
+    display: block;
+    border: 1px solid var(--c-gray-line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: #fff;
+    height: 100%;
+    transition: transform 0.2s var(--ease), box-shadow 0.2s;
+  }
+  .menu-card:hover {
+    opacity: 1;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  }
+  .menu-card__img {
+    aspect-ratio: 13 / 9;
+    background: var(--c-orange-light);
+    overflow: hidden;
+  }
+  .menu-card__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .menu-card__body {
+    position: relative;
+    padding: 30px 18px 18px;
+    display: grid;
+    gap: 6px;
+  }
+  .menu-card__icon {
+    position: absolute;
+    top: -24px;
+    left: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--c-orange);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 0 4px #fff;
+  }
+  .menu-card__icon svg {
+    width: 26px;
+    height: 26px;
+  }
+  .menu-card__name {
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .menu-card__name::after {
+    content: '›';
+    color: var(--c-orange);
+    margin-left: 8px;
+  }
+  .menu-card__lead {
+    font-size: 14px;
+    color: var(--c-muted);
+    line-height: 1.6;
+  }
+  @media (max-width: 900px) {
+    .menu__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .menu-card__body {
+      padding: 26px 12px 14px;
+    }
+    .menu-card__name {
+      font-size: 15px;
+    }
+    .menu-card__lead {
+      font-size: 12px;
+    }
+    .menu-card__icon {
+      width: 40px;
+      height: 40px;
+      top: -20px;
+      left: 10px;
+    }
+    .menu-card__icon svg {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  /* ---- works ---- */
+  .ba-link {
+    font-weight: 700;
+    color: var(--c-orange-dark);
+    text-decoration: underline;
+  }
+
+  /* ---- reason ---- */
+  .reason__wrap {
+    display: grid;
+    gap: 28px;
+    align-items: center;
+  }
+  .reason__list {
+    display: grid;
+    gap: 16px;
+  }
+  .reason__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    border: 1px solid #f5dfc8;
+  }
+  .reason__num {
+    font-family: var(--font-en);
+    font-weight: 700;
+    font-size: 30px;
+    line-height: 1;
+    color: var(--c-orange);
+  }
+  .reason__title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .reason__text {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+  .reason__sugi {
+    position: relative;
+    width: clamp(170px, 26vw, 260px);
+    margin-inline: auto;
+  }
+  .reason__bubble {
+    position: absolute;
+    left: -10px;
+    top: -6px;
+    background: #fff;
+    border: 2px solid var(--c-orange);
+    border-radius: 16px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+    transform: translateX(-30%);
+  }
+  .reason__bubble::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    bottom: -9px;
+    border: 8px solid transparent;
+    border-top-color: var(--c-orange);
+    border-bottom: 0;
+  }
+  @media (min-width: 900px) {
+    .reason__wrap {
+      grid-template-columns: 1fr auto;
+      gap: 48px;
+    }
+    .reason__bubble {
+      transform: none;
+      left: auto;
+      right: 70%;
+      top: 8px;
+    }
+  }
+  @media (max-width: 899px) {
+    .reason__sugi {
+      margin-top: 28px;
+    }
+    .reason__bubble {
+      left: 50%;
+      transform: translateX(-120%);
+    }
+  }
+
+  /* ---- flow ---- */
+  .flow__list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    counter-reset: step;
+  }
+  .flow__step {
+    position: relative;
+    background: #fff;
+    border: 1px solid var(--c-gray-line);
+    border-top: 4px solid var(--c-orange);
+    border-radius: var(--radius);
+    padding: 18px 18px 20px;
+  }
+  .flow__num {
+    display: inline-block;
+    font-family: var(--font-en);
+    font-weight: 700;
+    color: var(--c-orange);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+  }
+  .flow__title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .flow__text {
+    font-size: 14px;
+    color: var(--c-muted);
+    margin-top: 6px;
+  }
+  @media (max-width: 900px) {
+    .flow__list {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+  }
+  @media (max-width: 520px) {
+    .flow__list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---- company ---- */
+  .company__inner {
+    display: grid;
+    gap: 28px;
+    align-items: center;
+  }
+  .company__photo img {
+    border-radius: var(--radius-lg);
+    width: 100%;
+    height: auto;
+  }
+  .company__name {
+    margin-top: 10px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .company__greeting {
+    font-size: 15px;
+  }
+  .company__dl {
+    margin-top: 18px;
+    border-top: 1px solid var(--c-gray-line);
+    font-size: 14px;
+  }
+  .company__dl > div {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--c-gray-line);
+  }
+  .company__dl dt {
+    font-weight: 700;
+    color: var(--c-orange-dark);
+  }
+  @media (min-width: 768px) {
+    .company__inner {
+      grid-template-columns: 1fr 1.3fr;
+      gap: 48px;
+    }
+  }
+
+  /* ---- news ---- */
+  .news {
+    padding-block: clamp(40px, 6vw, 72px);
+  }
+  .news__inner {
+    display: grid;
+    gap: 16px;
+  }
+  .news__more {
+    text-align: right;
+    margin-top: 12px;
+    font-weight: 700;
+  }
+  .news__more a {
+    color: var(--c-orange-dark);
+    text-decoration: underline;
+  }
+  @media (min-width: 900px) {
+    .news__inner {
+      grid-template-columns: 240px 1fr;
+      gap: 40px;
+    }
+  }
+
+  /* ---- faq ---- */
+  .faq__list {
+    display: grid;
+    gap: 12px;
+    max-width: 860px;
+    margin-inline: auto;
+  }
+  .faq__item {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 1px solid #f3ddc6;
+  }
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 44px 16px 18px;
+    font-weight: 700;
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+  }
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__item summary::after {
+    content: '';
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--c-orange);
+    border-bottom: 2px solid var(--c-orange);
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform 0.2s;
+  }
+  .faq__item[open] summary::after {
+    transform: translateY(-30%) rotate(-135deg);
+  }
+  .faq__q,
+  .faq__a-mark {
+    flex: none;
+    display: inline-grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-family: var(--font-en);
+    font-weight: 700;
+    background: var(--c-orange);
+    color: #fff;
+  }
+  .faq__a {
+    display: flex;
+    gap: 12px;
+    padding: 0 18px 18px;
+    font-size: 15px;
+  }
+  .faq__a-mark {
+    background: var(--c-black);
+  }
+</style>

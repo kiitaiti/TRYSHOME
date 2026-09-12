@@ -1,0 +1,271 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import PageHero from '@/components/PageHero.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import Icon from '@/components/Icon.astro';
+import TroubleBox from '@/components/TroubleBox.astro';
+import BeforeAfter from '@/components/BeforeAfter.astro';
+import WorkCard from '@/components/WorkCard.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import { reformCategories } from '@/data/reform';
+import { getWorks, imgUrl, toArray } from '@/lib/microcms';
+
+export async function getStaticPaths() {
+  return reformCategories.map((c) => ({ params: { slug: c.slug }, props: { cat: c } }));
+}
+const { cat } = Astro.props;
+const idx = reformCategories.findIndex((c) => c.slug === cat.slug);
+const works = (await getWorks()).filter((w) => toArray(w.category).includes(cat.worksCategory));
+const baWork = works.find((w) => w.beforeImage && w.afterImage);
+const others = reformCategories.filter((c) => c.slug !== cat.slug);
+const poses = ['omakase', 'peace', 'fists', 'wave', 'kirei', 'bow'] as const;
+const pose = poses[idx % poses.length];
+---
+
+<BaseLayout title={cat.name} description={`${cat.name}のご相談はTRYS HOME（東京都町田市）へ。${cat.lead}${cat.description.slice(0, 60)}`}>
+  <PageHero title={cat.name} en={cat.en} image={cat.photo} alt={cat.photoAlt} />
+  <Breadcrumb items={[{ label: 'リフォームメニュー', href: '/reform/' }, { label: cat.name }]} />
+
+  <section class="section">
+    <div class="container">
+      <p class="section-title">
+        <span class="section-title__en">REFORM.{String(idx + 1).padStart(2, '0')}</span>
+        <span class="section-title__ja">{cat.name}について</span>
+      </p>
+      <ul class="jump">
+        {cat.subs.length > 0 ? cat.subs.map((s) => <li><a href={`#sub-${s.name}`}>{s.name}</a></li>) : cat.services.map((s) => <li><span>{s}</span></li>)}
+      </ul>
+      <p class="lead">{cat.lead}</p>
+
+      <div class="overview">
+        <div>
+          <h2 class="bar-heading">{cat.name}<small>{cat.en}</small></h2>
+          <p class="overview__text">{cat.description}</p>
+          <div style="margin-top:20px"><TroubleBox items={cat.troubles} /></div>
+        </div>
+        <div class="overview__side">
+          <Image src={cat.photo} alt={cat.photoAlt} width={800} height={600} loading="eager" class="overview__photo" />
+          <div class="overview__sugi"><Sugitora pose={pose} width={170} /></div>
+        </div>
+      </div>
+
+      <h2 class="bar-heading" style="margin-top:56px">ご相談いただける工事内容</h2>
+      <ul class="services">
+        {cat.services.map((s) => <li><Icon name="check" />{s}</li>)}
+      </ul>
+      <p class="note">※ 建物の状態や工事内容により対応可否が異なる場合があります。費用は現地調査のうえ個別にお見積りいたします。</p>
+    </div>
+  </section>
+
+  {
+    cat.subs.length > 0 && (
+      <section class="section bg-gray">
+        <div class="container">
+          <div class="subs">
+            {cat.subs.map((s) => (
+              <article class="sub" id={`sub-${s.name}`}>
+                <h2 class="bar-heading">{s.name}</h2>
+                <div class="sub__grid">
+                  <div>
+                    <p>{s.text}</p>
+                    <div style="margin-top:16px">
+                      <TroubleBox items={s.troubles} />
+                    </div>
+                  </div>
+                  {s.photo && (
+                    <figure class="sub__photo">
+                      <Image src={s.photo} alt={s.photoAlt ?? ''} width={800} height={600} loading="lazy" />
+                      <figcaption>施工写真：{s.photoAlt}</figcaption>
+                    </figure>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    baWork && (
+      <section class="section">
+        <div class="container">
+          <BeforeAfter
+            before={{ src: imgUrl(baWork.beforeImage!, 800, { height: 600 }), width: 800, height: 600 }}
+            after={{ src: imgUrl(baWork.afterImage!, 800, { height: 600 }), width: 800, height: 600 }}
+            alt={baWork.title}
+          />
+          <p class="text-center" style="margin-top:12px"><a class="ba-link" href={`/works/${baWork.id}/`}>{baWork.title} ›</a></p>
+        </div>
+      </section>
+    )
+  }
+
+  <section class:list={['section', { 'bg-gray': !baWork && cat.subs.length === 0 }]}>
+    <div class="container">
+      <h2 class="bar-heading">{cat.short}の施工実績</h2>
+      {
+        works.length > 0 ? (
+          <div class="grid grid--3">{works.slice(0, 6).map((w) => <WorkCard work={w} />)}</div>
+        ) : (
+          <p class="note">このカテゴリーの施工実績は準備中です。他のカテゴリーの実績は<a href="/works/" style="text-decoration:underline">施工実績一覧</a>をご覧ください。</p>
+        )
+      }
+      <div class="btn-row">
+        <a class="btn btn--outline" href={`/works/category/${cat.slug}/`}>{cat.short}の実績をもっと見る<span class="arrow"></span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section bg-orange-light">
+    <div class="container">
+      <h2 class="bar-heading">その他のリフォームメニュー</h2>
+      <ul class="others">
+        {others.map((o) => <li><a href={`/reform/${o.slug}/`}><Icon name={o.icon} />{o.name}</a></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <CtaSection pose="wave" />
+</BaseLayout>
+
+<style>
+  .jump {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    background: var(--c-gray-bg);
+    padding: 16px;
+    border-radius: var(--radius);
+    margin-bottom: 36px;
+  }
+  .jump a,
+  .jump span {
+    display: block;
+    background: #fff;
+    text-align: center;
+    padding: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    font-size: 15px;
+    border: 1px solid var(--c-gray-line);
+  }
+  .jump a:hover {
+    background: var(--c-orange-light);
+    opacity: 1;
+  }
+  .overview {
+    display: grid;
+    gap: 24px;
+    align-items: start;
+  }
+  .overview__text {
+    font-size: 15px;
+  }
+  .overview__side {
+    position: relative;
+  }
+  .overview__side :global(.overview__photo) {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .overview__sugi {
+    position: absolute;
+    right: -10px;
+    bottom: -30px;
+    width: clamp(90px, 12vw, 150px);
+  }
+  .services {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 20px;
+    margin-bottom: 14px;
+  }
+  .services li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid var(--c-gray-line);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-weight: 500;
+  }
+  .services svg {
+    width: 22px;
+    height: 22px;
+    color: var(--c-orange);
+    flex: none;
+  }
+  .subs {
+    display: grid;
+    gap: 48px;
+  }
+  .sub__grid {
+    display: grid;
+    gap: 20px;
+    align-items: start;
+  }
+  .sub__photo img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  .sub__photo figcaption {
+    font-size: 12px;
+    color: var(--c-muted);
+    margin-top: 6px;
+  }
+  .ba-link {
+    font-weight: 700;
+    color: var(--c-orange-dark);
+    text-decoration: underline;
+  }
+  .others {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .others a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-weight: 700;
+    border: 1px solid #f3ddc6;
+  }
+  .others svg {
+    width: 24px;
+    height: 24px;
+    color: var(--c-orange);
+  }
+  @media (min-width: 768px) {
+    .overview {
+      grid-template-columns: 1.1fr 1fr;
+      gap: 40px;
+    }
+    .sub__grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+  }
+  @media (max-width: 600px) {
+    .services {
+      grid-template-columns: 1fr;
+    }
+    .overview__sugi {
+      width: 84px;
+      bottom: -20px;
+    }
+  }
+</style>

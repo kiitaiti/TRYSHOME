@@ -1,0 +1,31 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import PageHero from '@/components/PageHero.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import NewsList from '@/components/NewsList.astro';
+import Pagination from '@/components/Pagination.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import type { NewsItem } from '@/lib/microcms';
+interface Props { items: NewsItem[]; page: number; total: number }
+const { items, page, total } = Astro.props;
+---
+<BaseLayout title={page > 1 ? `お知らせ（${page}ページ目）` : 'お知らせ'} description="TRYS HOME（株式会社TRYS）からのお知らせ一覧です。" noindex={page > 1}>
+  <PageHero title="お知らせ" en="NEWS" />
+  <Breadcrumb items={[{ label: 'お知らせ' }]} />
+  <section class="section">
+    <div class="container news-wrap">
+      <div class="news-wrap__sugi"><Sugitora pose="wave" width={150} loading="eager" /></div>
+      <div>
+        <NewsList items={items} />
+        <Pagination current={page} total={total} base="/news/" />
+      </div>
+    </div>
+  </section>
+  <CtaSection pose="peace" />
+</BaseLayout>
+<style>
+  .news-wrap { display: grid; gap: 24px; }
+  .news-wrap__sugi { width: 120px; }
+  @media (min-width: 900px) { .news-wrap { grid-template-columns: 150px 1fr; gap: 40px; align-items: start; } }
+</style>

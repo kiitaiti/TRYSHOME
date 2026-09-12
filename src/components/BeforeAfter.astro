@@ -1,0 +1,17 @@
+---
+interface Props { before: { src: string; width?: number; height?: number }; after: { src: string; width?: number; height?: number }; title?: string; alt?: string }
+const { before, after, alt = '' } = Astro.props;
+---
+<div class="ba">
+  <p class="ba__title">こんなに<span class="em">変</span>わる！</p>
+  <div class="ba__grid">
+    <figure class="ba__item ba__item--before">
+      <img src={before.src} alt={alt ? `${alt}（施工前）` : '施工前'} width={before.width ?? 800} height={before.height ?? 600} loading="lazy" decoding="async" />
+      <figcaption class="ba__label">BEFORE</figcaption>
+    </figure>
+    <figure class="ba__item ba__item--after">
+      <img src={after.src} alt={alt ? `${alt}（施工後）` : '施工後'} width={after.width ?? 800} height={after.height ?? 600} loading="lazy" decoding="async" />
+      <figcaption class="ba__label">AFTER</figcaption>
+    </figure>
+  </div>
+</div>

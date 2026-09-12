@@ -1,0 +1,161 @@
+---
+import { Image } from 'astro:assets';
+import logo from '@/assets/img/logo-trys-home.png';
+import sugiBow from '@/assets/sugitora/sugitora-bow.png';
+import { site, nav } from '@/data/site';
+import { reformCategories } from '@/data/reform';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__sugi" aria-hidden="true">
+    <Image src={sugiBow} alt="" width={180} densities={[1, 2]} loading="lazy" />
+    <span class="footer__sugi-bubble">ご覧いただき<br />ありがとうございました！</span>
+  </div>
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <a href="/" class="footer__logo"><Image src={logo} alt={`${site.brand} ロゴ`} width={200} densities={[1, 2]} loading="lazy" /></a>
+      <p class="footer__corp">{site.corp}</p>
+      <address class="footer__address">
+        {site.postal} {site.address}<br />
+        TEL <a href={site.telHref}>{site.tel}</a> ／ FAX {site.fax}<br />
+        <span class="note">{site.license}</span>
+      </address>
+      <a class="footer__insta" href={site.instagram} target="_blank" rel="noopener">Instagram {site.instagramId}</a>
+    </div>
+    <nav class="footer__nav" aria-label="フッターナビゲーション">
+      <div>
+        <p class="footer__nav-title">メニュー</p>
+        <ul>
+          <li><a href="/">トップページ</a></li>
+          {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+          <li><a href="/privacy/">プライバシーポリシー</a></li>
+        </ul>
+      </div>
+      <div>
+        <p class="footer__nav-title">リフォームメニュー</p>
+        <ul>
+          {reformCategories.map((c) => <li><a href={`/reform/${c.slug}/`}>{c.name}</a></li>)}
+        </ul>
+      </div>
+    </nav>
+  </div>
+  <div class="footer__bottom">
+    <small>&copy; {year} {site.corp} All Rights Reserved.</small>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    background: var(--c-orange-light);
+    margin-top: 0;
+    padding-top: 90px;
+    border-top: 4px solid var(--c-orange);
+  }
+  .footer__sugi {
+    position: absolute;
+    top: -6px;
+    right: clamp(12px, 6vw, 80px);
+    width: clamp(90px, 12vw, 130px);
+    transform: translateY(-58%);
+  }
+  .footer__sugi img {
+    width: 100%;
+    height: auto;
+  }
+  .footer__sugi-bubble {
+    position: absolute;
+    right: 100%;
+    top: 22%;
+    width: max-content;
+    max-width: 180px;
+    background: #fff;
+    border: 2px solid var(--c-orange);
+    border-radius: 12px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    margin-right: 8px;
+    text-align: center;
+  }
+  .footer__sugi-bubble::after {
+    content: '';
+    position: absolute;
+    right: -9px;
+    top: 45%;
+    border: 8px solid transparent;
+    border-left-color: var(--c-orange);
+    border-right: 0;
+  }
+  .footer__inner {
+    display: grid;
+    gap: 32px;
+    padding-bottom: 40px;
+  }
+  .footer__logo img {
+    width: 180px;
+    height: auto;
+  }
+  .footer__corp {
+    font-weight: 700;
+    margin-top: 12px;
+  }
+  .footer__address {
+    font-style: normal;
+    font-size: 14px;
+    margin-top: 6px;
+    line-height: 1.9;
+  }
+  .footer__insta {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--c-orange-dark);
+    text-decoration: underline;
+  }
+  .footer__nav {
+    display: grid;
+    gap: 24px;
+  }
+  .footer__nav-title {
+    font-weight: 700;
+    border-bottom: 2px solid var(--c-orange);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+  .footer__nav li a {
+    display: block;
+    padding: 5px 0;
+    font-size: 14px;
+  }
+  .footer__nav li a::before {
+    content: '›';
+    color: var(--c-orange);
+    margin-right: 6px;
+    font-weight: 700;
+  }
+  .footer__bottom {
+    background: var(--c-orange);
+    color: #fff;
+    text-align: center;
+    padding: 14px 16px;
+    font-size: 12px;
+  }
+  @media (min-width: 768px) {
+    .footer__inner {
+      grid-template-columns: 1.2fr 1.5fr;
+    }
+    .footer__nav {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 480px) {
+    .footer__sugi-bubble {
+      font-size: 11px;
+      max-width: 140px;
+    }
+  }
+</style>

@@ -1,0 +1,31 @@
+---
+/**
+ * スギトラ配置コンポーネント。添付イラストをそのまま使用（トリミング・加工なし）。
+ * pose: wave（手を振る） / fists（ガッツポーズ） / bow（お辞儀） / peace（ピース） /
+ *       kirei（「めっちゃ綺麗やん！」吹き出し付き） / omakase（「TRYSにお任せ！」吹き出し付き）
+ */
+import { Image } from 'astro:assets';
+import wave from '@/assets/sugitora/sugitora-wave.png';
+import fists from '@/assets/sugitora/sugitora-fists.png';
+import bow from '@/assets/sugitora/sugitora-bow.png';
+import peace from '@/assets/sugitora/sugitora-peace.png';
+import kirei from '@/assets/sugitora/sugitora-kirei.png';
+import omakase from '@/assets/sugitora/sugitora-omakase.png';
+
+type Pose = 'wave' | 'fists' | 'bow' | 'peace' | 'kirei' | 'omakase';
+interface Props { pose: Pose; width?: number; class?: string; alt?: string; float?: boolean; loading?: 'lazy' | 'eager'; style?: string }
+const { pose, width = 160, class: cls, alt, float = false, loading = 'lazy', style } = Astro.props;
+const map: Record<Pose, { src: ImageMetadata; alt: string }> = {
+  wave: { src: wave, alt: 'スギトラが手を振っている' },
+  fists: { src: fists, alt: 'スギトラがガッツポーズをしている' },
+  bow: { src: bow, alt: 'スギトラがお辞儀をしている' },
+  peace: { src: peace, alt: 'スギトラがピースをしている' },
+  kirei: { src: kirei, alt: 'スギトラ「めっちゃ綺麗やん！」' },
+  omakase: { src: omakase, alt: 'スギトラ「TRYSにお任せ！」' },
+};
+const { src, alt: defaultAlt } = map[pose];
+const a = alt ?? defaultAlt;
+---
+<div class:list={['sugi', cls, { 'sugi--float': float }]} style={style} aria-hidden={a === '' ? 'true' : undefined}>
+  <Image src={src} alt={a} width={width} densities={[1, 2]} loading={loading} />
+</div>

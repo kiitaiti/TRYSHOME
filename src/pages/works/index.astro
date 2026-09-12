@@ -1,0 +1,7 @@
+---
+import WorksListPage from '@/components/WorksListPage.astro';
+import { getWorks } from '@/lib/microcms';
+import { chunk, PER_PAGE } from '@/lib/paginate';
+const pages = chunk(await getWorks(), PER_PAGE);
+---
+<WorksListPage items={pages[0]} page={1} total={pages.length} base="/works/" />

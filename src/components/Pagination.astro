@@ -1,0 +1,13 @@
+---
+interface Props { current: number; total: number; base: string }
+const { current, total, base } = Astro.props;
+const href = (n: number) => (n === 1 ? base : `${base}page/${n}/`);
+const pages = Array.from({ length: total }, (_, i) => i + 1);
+---
+{total > 1 && (
+  <nav class="pagination" aria-label="ページ送り">
+    {current > 1 && <a href={href(current - 1)} aria-label="前のページ">‹</a>}
+    {pages.map((n) => (n === current ? <span class="is-current" aria-current="page">{n}</span> : <a href={href(n)}>{n}</a>))}
+    {current < total && <a href={href(current + 1)} aria-label="次のページ">›</a>}
+  </nav>
+)}

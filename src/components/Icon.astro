@@ -1,0 +1,55 @@
+---
+/** シンプルな線画アイコン（外部ライブラリ不使用） */
+interface Props {
+  name:
+    | 'menu'
+    | 'works'
+    | 'about'
+    | 'company'
+    | 'news'
+    | 'mail'
+    | 'phone'
+    | 'water'
+    | 'interior'
+    | 'exterior'
+    | 'garden'
+    | 'carpentry'
+    | 'equipment'
+    | 'check'
+    | 'arrow';
+  class?: string;
+}
+const { name, class: cls } = Astro.props;
+const paths: Record<Props['name'], string> = {
+  menu: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
+  works: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="16" cy="9" r="1.5"/>',
+  about: '<path d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7z"/><path d="m9 12 2 2 4-4"/>',
+  company: '<rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 7h3M13 7h3M8 11h3M13 11h3M8 15h3M13 15h3M10 21v-3h4v3"/>',
+  news: '<rect x="3" y="5" width="18" height="15" rx="2"/><path d="M7 9h10M7 13h10M7 17h6"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+  phone: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+  water: '<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/><path d="M9 14a3 3 0 0 0 3 3"/>',
+  interior: '<path d="M3 20h18"/><path d="M5 20v-9h14v9"/><path d="M8 11V7h8v4"/><path d="M5 15h14"/>',
+  exterior: '<path d="M2 12 12 3l10 9"/><path d="M5 10v10h14V10"/><path d="M9 20v-5h6v5"/>',
+  garden: '<path d="M4 20h16"/><path d="M8 20v-6a4 4 0 0 1 8 0v6"/><path d="M12 10V4"/><path d="M12 4c-3 0-4 2-4 3 2 0 4-1 4-3zM12 6c3 0 4 2 4 3-2 0-4-1-4-3z"/>',
+  carpentry: '<path d="m3 21 6-6"/><path d="m9 9 6 6"/><path d="M14 4 20 10l-4 4-6-6z"/><path d="m17 7 3-3"/>',
+  equipment: '<rect x="3" y="6" width="18" height="9" rx="2"/><path d="M6 15v3M18 15v3M7 10h10"/><path d="M9 21c0-1.5.5-2 1-3M15 21c0-1.5-.5-2-1-3"/>',
+  check: '<path d="m5 12 4 4L19 6"/>',
+  arrow: '<path d="m9 5 7 7-7 7"/>',
+};
+---
+
+<svg
+  class={cls}
+  viewBox="0 0 24 24"
+  width="24"
+  height="24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  focusable="false"
+  set:html={paths[name]}
+/>

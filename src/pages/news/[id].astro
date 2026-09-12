@@ -1,0 +1,47 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import { getNews, imgUrl, toArray, excerpt, formatDate, newsDate, usingSampleData, type NewsItem } from '@/lib/microcms';
+export async function getStaticPaths() {
+  const news = await getNews();
+  return news.map((n, i) => ({ params: { id: n.id }, props: { item: n, prev: news[i + 1] ?? null, next: news[i - 1] ?? null } }));
+}
+const { item, prev, next } = Astro.props as { item: NewsItem; prev: NewsItem | null; next: NewsItem | null };
+const cat = toArray(item.category)[0] ?? 'お知らせ';
+---
+<BaseLayout title={item.title} description={excerpt(item.body, 110) || item.title} ogType="article" ogImage={item.thumbnail ? imgUrl(item.thumbnail, 1200, { height: 630 }) : '/ogp.png'}>
+  <Breadcrumb items={[{ label: 'お知らせ', href: '/news/' }, { label: item.title }]} />
+  <article class="section">
+    <div class="container post">
+      <header class="post__head">
+        <p class="post__meta"><time datetime={newsDate(item)}>{formatDate(newsDate(item))}</time><span class="post__cat">{cat}</span>{usingSampleData && <span class="badge-sample">サンプルデータ</span>}</p>
+        <h1 class="post__title">{item.title}</h1>
+      </header>
+      {item.thumbnail && <figure class="post__thumb"><img src={imgUrl(item.thumbnail, 1200)} alt="" width={item.thumbnail.width ?? 1200} height={item.thumbnail.height ?? 800} loading="eager" decoding="async" /></figure>}
+      <div class="prose post__body" set:html={item.body} />
+      <nav class="post__nav" aria-label="前後の記事">
+        {prev ? <a href={`/news/${prev.id}/`} rel="prev">‹ {prev.title}</a> : <span />}
+        <a href="/news/" class="post__nav-list">一覧へ</a>
+        {next ? <a href={`/news/${next.id}/`} rel="next">{next.title} ›</a> : <span />}
+      </nav>
+      <div class="post__sugi"><Sugitora pose="bow" width={110} /></div>
+    </div>
+  </article>
+  <CtaSection pose="wave" />
+</BaseLayout>
+<style>
+  .post { max-width: 820px; position: relative; }
+  .post__meta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--font-en); font-weight: 700; color: var(--c-muted); }
+  .post__cat { font-family: var(--font); background: var(--c-orange); color: #fff; font-size: 12px; padding: 4px 10px; border-radius: 4px; }
+  .post__title { font-size: clamp(22px, 3.2vw, 32px); line-height: 1.45; margin-top: 10px; padding-bottom: 16px; border-bottom: 2px solid var(--c-orange); }
+  .post__thumb { margin-top: 28px; }
+  .post__thumb img { width: 100%; height: auto; border-radius: var(--radius-lg); max-height: 520px; object-fit: cover; }
+  .post__body { margin-top: 32px; }
+  .post__nav { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin-top: 48px; padding-top: 20px; border-top: 1px solid var(--c-gray-line); font-size: 14px; font-weight: 700; }
+  .post__nav a:last-child { text-align: right; }
+  .post__nav-list { background: var(--c-black); color: #fff; padding: 8px 18px; border-radius: 999px; }
+  .post__sugi { width: 100px; margin: 24px 0 0 auto; }
+  @media (max-width: 600px) { .post__nav { grid-template-columns: 1fr; } .post__nav a:last-child { text-align: left; } }
+</style>

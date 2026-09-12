@@ -1,0 +1,263 @@
+---
+/**
+ * 初回ロード演出：古い家 → スギトラが通過 → 家が横に一回転 → リフォームした家に生まれ変わる
+ * - html.is-loading が付いている時だけ表示（判定は BaseLayout の inline script。sessionStorage で同一タブ初回のみ）
+ * - JS が動かない場合は表示されない（本文が隠れない）
+ * - 画像読み込み失敗・遅延時は即終了。最大 5 秒で強制終了。スキップボタンあり
+ */
+---
+
+<div id="loader" class="loader" aria-hidden="true">
+  <div class="loader__stage" id="loader-stage">
+    <div class="loader__house" id="loader-house">
+      <img class="loader__house-img" id="loader-old" src="/loader/house-old.webp" alt="" width="640" height="640" decoding="async" />
+      <img class="loader__house-img" id="loader-new" src="/loader/house-new.webp" alt="" width="640" height="585" decoding="async" hidden />
+      <div class="loader__sparkles" id="loader-sparkles" aria-hidden="true">
+        <span style="--x: 8%; --y: 12%; --d: 0ms"></span>
+        <span style="--x: 88%; --y: 8%; --d: 80ms"></span>
+        <span style="--x: -4%; --y: 58%; --d: 160ms"></span>
+        <span style="--x: 96%; --y: 52%; --d: 40ms"></span>
+        <span style="--x: 22%; --y: -6%; --d: 200ms"></span>
+        <span style="--x: 70%; --y: 96%; --d: 120ms"></span>
+      </div>
+    </div>
+    <div class="loader__sugi" id="loader-sugi">
+      <img id="loader-sugi-img" src="/loader/sugitora.webp" alt="" width="245" height="360" decoding="async" />
+    </div>
+  </div>
+  <p class="loader__text" id="loader-text">住まいが変わる。毎日が変わる。</p>
+  <button type="button" class="loader__skip" id="loader-skip">スキップ</button>
+</div>
+
+<script>
+  (() => {
+    const html = document.documentElement;
+    const loader = document.getElementById('loader');
+    if (!loader) return;
+    if (!html.classList.contains('is-loading')) {
+      loader.remove();
+      return;
+    }
+    document.body.classList.add('is-locked');
+
+    const stage = document.getElementById('loader-stage') as HTMLElement;
+    const house = document.getElementById('loader-house') as HTMLElement;
+    const oldImg = document.getElementById('loader-old') as HTMLImageElement;
+    const newImg = document.getElementById('loader-new') as HTMLImageElement;
+    const sugi = document.getElementById('loader-sugi') as HTMLElement;
+    const sugiImg = document.getElementById('loader-sugi-img') as HTMLImageElement;
+    const sparkles = document.getElementById('loader-sparkles') as HTMLElement;
+    const skip = document.getElementById('loader-skip') as HTMLButtonElement;
+
+    let done = false;
+    const markSeen = () => {
+      try {
+        sessionStorage.setItem('trys-loader-seen', '1');
+      } catch {
+        /* noop */
+      }
+    };
+    const finish = () => {
+      if (done) return;
+      done = true;
+      markSeen();
+      loader.classList.add('is-done');
+      window.setTimeout(() => {
+        html.classList.remove('is-loading');
+        document.body.classList.remove('is-locked');
+        loader.remove();
+      }, 480);
+    };
+
+    // 安全装置：何があっても 5 秒で閉じる
+    const hardStop = window.setTimeout(finish, 5000);
+    skip.addEventListener('click', finish);
+
+    const wait = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
+    const decode = (img: HTMLImageElement) =>
+      new Promise<boolean>((resolve) => {
+        const ok = () => resolve(true);
+        const ng = () => resolve(false);
+        if (img.complete && img.naturalWidth > 0) return ok();
+        img.addEventListener('load', ok, { once: true });
+        img.addEventListener('error', ng, { once: true });
+      });
+
+    const run = async () => {
+      // 素材の準備（1.8 秒以内に揃わなければ演出を省略）
+      const ready = await Promise.race([
+        Promise.all([decode(oldImg), decode(newImg), decode(sugiImg)]).then((r) => r.every(Boolean)),
+        wait(1800).then(() => false),
+      ]);
+      if (!ready || done) return finish();
+
+      loader.classList.add('is-ready');
+      const W = stage.clientWidth;
+      const sugiW = sugi.offsetWidth;
+      const travel = 2000;
+
+      // スギトラ：左から右へ通過（上下動つき）
+      const move = sugi.animate(
+        [{ transform: `translateX(${-sugiW - 24}px)` }, { transform: `translateX(${W + 24}px)` }],
+        { duration: travel, easing: 'linear', fill: 'forwards' },
+      );
+      sugiImg.animate(
+        [
+          { transform: 'translateY(0) rotate(-3deg)' },
+          { transform: 'translateY(-14px) rotate(3deg)' },
+          { transform: 'translateY(0) rotate(-3deg)' },
+        ],
+        { duration: 330, iterations: Math.ceil(travel / 330), easing: 'ease-in-out' },
+      );
+
+      // 家の前を通るタイミング（中央）で横回転を開始
+      await wait(travel * 0.46);
+      if (done) return;
+      const half = 240;
+      await oldImg.animate([{ transform: 'scaleX(1)' }, { transform: 'scaleX(0.02)' }], {
+        duration: half,
+        easing: 'ease-in',
+        fill: 'forwards',
+      }).finished.catch(() => {});
+      // 薄くなった瞬間に画像を差し替える（位置・見かけの大きさは同じ枠内）
+      oldImg.hidden = true;
+      newImg.hidden = false;
+      await newImg.animate([{ transform: 'scaleX(0.02)' }, { transform: 'scaleX(1)' }], {
+        duration: half,
+        easing: 'ease-out',
+        fill: 'forwards',
+      }).finished.catch(() => {});
+      if (done) return;
+
+      // 生まれ変わった強調：軽い弾み + キラキラ
+      sparkles.classList.add('is-on');
+      house.animate(
+        [{ transform: 'scale(1)' }, { transform: 'scale(1.07)' }, { transform: 'scale(0.98)' }, { transform: 'scale(1)' }],
+        { duration: 420, easing: 'ease-out' },
+      );
+
+      // スギトラが右へ抜けるのを待ってからフェードアウト
+      await Promise.race([move.finished.catch(() => {}), wait(travel)]);
+      await wait(260);
+      window.clearTimeout(hardStop);
+      finish();
+    };
+    run().catch(finish);
+  })();
+</script>
+
+<style>
+  .loader {
+    display: none;
+  }
+  :global(html.is-loading) .loader {
+    display: grid;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: #fff;
+    place-items: center;
+    align-content: center;
+    gap: 20px;
+    opacity: 1;
+    transition: opacity 0.45s ease;
+  }
+  .loader.is-done {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .loader__stage {
+    position: relative;
+    width: min(100vw, 720px);
+    height: clamp(260px, 52vw, 380px);
+    overflow: hidden;
+  }
+  .loader__house {
+    position: absolute;
+    left: 50%;
+    bottom: 24px;
+    width: clamp(200px, 46vw, 300px);
+    aspect-ratio: 1 / 1;
+    transform: translateX(-50%);
+    transform-origin: 50% 90%;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .loader.is-ready .loader__house {
+    opacity: 1;
+  }
+  .loader__house-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+  .loader__sugi {
+    position: absolute;
+    left: 0;
+    bottom: 12px;
+    width: clamp(96px, 20vw, 130px);
+    z-index: 2;
+    transform: translateX(-150%);
+    will-change: transform;
+  }
+  .loader__sugi img {
+    width: 100%;
+    height: auto;
+    transform-origin: 50% 100%;
+  }
+  .loader__sparkles span {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: 26px;
+    height: 26px;
+    opacity: 0;
+    background: #ffcf3a;
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    transform: scale(0);
+  }
+  .loader__sparkles.is-on span {
+    animation: loader-sparkle 0.7s var(--d) ease-out forwards;
+  }
+  @keyframes loader-sparkle {
+    0% {
+      opacity: 0;
+      transform: scale(0) rotate(0);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1.2) rotate(20deg);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0.4) rotate(45deg);
+    }
+  }
+  .loader__text {
+    font-weight: 700;
+    font-size: clamp(15px, 2.4vw, 20px);
+    letter-spacing: 0.08em;
+    color: var(--c-black);
+    opacity: 0;
+    transition: opacity 0.4s ease 0.2s;
+  }
+  .loader.is-ready .loader__text {
+    opacity: 1;
+  }
+  .loader__skip {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    background: #fff;
+    border: 1px solid var(--c-gray-line);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: var(--c-muted);
+  }
+</style>

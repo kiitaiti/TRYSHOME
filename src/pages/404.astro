@@ -1,0 +1,26 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import { nav } from '@/data/site';
+---
+<BaseLayout title="ページが見つかりません" description="お探しのページは見つかりませんでした。" noindex>
+  <section class="section nf">
+    <div class="container">
+      <div class="nf__sugi"><Sugitora pose="bow" width={220} loading="eager" /></div>
+      <p class="nf__code">404</p>
+      <h1 class="nf__title">ページが見つかりませんでした</h1>
+      <p>お探しのページは移動または削除された可能性があります。<br />URLをご確認いただくか、以下のメニューからお進みください。</p>
+      <ul class="nf__links">
+        <li><a class="btn btn--primary" href="/">トップページへ</a></li>
+        {nav.map((n) => <li><a class="btn btn--outline" href={n.href}>{n.label}</a></li>)}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+<style>
+  .nf { text-align: center; }
+  .nf__sugi { width: 180px; margin: 0 auto 8px; }
+  .nf__code { font-family: var(--font-en); font-size: 64px; font-weight: 700; color: var(--c-orange); line-height: 1; }
+  .nf__title { font-size: clamp(20px, 3vw, 28px); margin: 8px 0 16px; }
+  .nf__links { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 28px; }
+</style>

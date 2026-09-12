@@ -1,0 +1,350 @@
+---
+import { Image } from 'astro:assets';
+import logo from '@/assets/img/logo-trys-home.png';
+import { site, nav } from '@/data/site';
+import Icon from '@/components/Icon.astro';
+
+const icons: Record<string, 'menu' | 'works' | 'about' | 'company' | 'news' | 'mail'> = {
+  '/reform/': 'menu',
+  '/works/': 'works',
+  '/about/': 'about',
+  '/company/': 'company',
+  '/news/': 'news',
+  '/contact/': 'mail',
+};
+const path = Astro.url.pathname;
+---
+
+<header class="header">
+  <div class="header__top">
+    <p class="header__tagline">東京都町田市のリフォーム・住まいのご相談は {site.brand}（{site.corp}）へ</p>
+  </div>
+  <div class="header__inner">
+    <a href="/" class="header__logo" aria-label={`${site.brand} トップページ`}>
+      <Image src={logo} alt={`${site.brand} ロゴ`} width={220} densities={[1, 2]} loading="eager" />
+    </a>
+
+    <nav class="gnav" aria-label="グローバルナビゲーション">
+      <ul>
+        {
+          nav.map((n) => (
+            <li>
+              <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>
+                <Icon name={icons[n.href]} class="gnav__icon" />
+                <span>{n.label}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="header__contact">
+      <a class="header__tel" href={site.telHref}>
+        <span class="header__tel-label">リフォームのご相談</span>
+        <span class="header__tel-number"><Icon name="phone" class="header__tel-icon" />{site.tel}</span>
+      </a>
+      <a class="btn btn--primary header__cta" href="/contact/">ご相談・お見積り</a>
+    </div>
+
+    <a class="header__sp-tel" href={site.telHref} aria-label={`電話をかける ${site.tel}`}><Icon name="phone" /><span>TEL</span></a>
+    <button class="header__menu-btn" type="button" aria-expanded="false" aria-controls="sp-menu" id="menu-btn">
+      <span class="header__menu-bar" aria-hidden="true"></span>
+      <span class="header__menu-text">MENU</span>
+    </button>
+  </div>
+
+  <div class="sp-menu" id="sp-menu" hidden>
+    <nav aria-label="メニュー">
+      <ul>
+        {
+          nav.map((n) => (
+            <li>
+              <a href={n.href}>
+                <Icon name={icons[n.href]} class="sp-menu__icon" />
+                {n.label}
+              </a>
+            </li>
+          ))
+        }
+        <li><a href="/privacy/">プライバシーポリシー</a></li>
+      </ul>
+      <div class="sp-menu__contact">
+        <a class="btn btn--outline btn--block" href={site.telHref}><Icon name="phone" />{site.tel}</a>
+        <a class="btn btn--primary btn--block" href="/contact/">ご相談・お見積りフォーム</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('menu-btn');
+  const menu = document.getElementById('sp-menu');
+  if (btn && menu) {
+    const close = () => {
+      btn.setAttribute('aria-expanded', 'false');
+      menu.hidden = true;
+      document.body.classList.remove('is-locked');
+    };
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      if (open) close();
+      else {
+        btn.setAttribute('aria-expanded', 'true');
+        const header = btn.closest('header');
+        menu.style.top = `${Math.max(0, header ? header.getBoundingClientRect().bottom : 0)}px`;
+        menu.hidden = false;
+        document.body.classList.add('is-locked');
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+    window.matchMedia('(min-width: 1001px)').addEventListener('change', (e) => {
+      if (e.matches) close();
+    });
+  }
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 900;
+    background: #fff;
+    box-shadow: 0 1px 0 var(--c-gray-line);
+  }
+  .header__top {
+    display: none;
+  }
+  .header__tagline {
+    font-size: 11px;
+    color: var(--c-muted);
+    line-height: 1.4;
+    padding: 4px 0 0;
+  }
+  .header__inner {
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: min(100% - 24px, 1360px);
+    margin-inline: auto;
+    height: var(--header-h-sp);
+  }
+  .header__logo {
+    flex: none;
+    display: block;
+  }
+  .header__logo img {
+    width: 120px;
+    height: auto;
+  }
+  .gnav,
+  .header__contact {
+    display: none;
+  }
+
+  .header__sp-tel {
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 2px;
+    width: 52px;
+    height: var(--header-h-sp);
+    color: var(--c-orange);
+    font-family: var(--font-en);
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .header__sp-tel svg {
+    width: 24px;
+    height: 24px;
+  }
+  .header__menu-btn {
+    background: var(--c-orange);
+    color: #fff;
+    border: 0;
+    width: 56px;
+    height: var(--header-h-sp);
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: 6px;
+    font-family: var(--font-en);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-right: -12px;
+  }
+  .header__menu-bar,
+  .header__menu-bar::before,
+  .header__menu-bar::after {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #fff;
+    border-radius: 2px;
+    transition: transform 0.2s;
+  }
+  .header__menu-bar {
+    position: relative;
+  }
+  .header__menu-bar::before,
+  .header__menu-bar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+  }
+  .header__menu-bar::before {
+    top: -7px;
+  }
+  .header__menu-bar::after {
+    top: 7px;
+  }
+  .header__menu-btn[aria-expanded='true'] .header__menu-bar {
+    background: transparent;
+  }
+  .header__menu-btn[aria-expanded='true'] .header__menu-bar::before {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .header__menu-btn[aria-expanded='true'] .header__menu-bar::after {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .sp-menu {
+    position: fixed;
+    inset: var(--header-h-sp) 0 0;
+    z-index: 1;
+    background: #fff;
+    overflow-y: auto;
+    padding: 8px 20px 100px;
+    z-index: 899;
+  }
+  .sp-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--c-gray-line);
+    font-weight: 700;
+  }
+  .sp-menu :global(.sp-menu__icon) {
+    width: 26px;
+    height: 26px;
+    color: var(--c-orange);
+  }
+  .sp-menu__contact {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  @media (min-width: 1001px) {
+    .header__top {
+      display: block;
+      width: min(100% - 32px, 1360px);
+      margin-inline: auto;
+    }
+    .header__inner {
+      height: var(--header-h);
+      gap: 24px;
+    }
+    .header__logo img {
+      width: 190px;
+    }
+    .header__menu-btn,
+    .header__sp-tel,
+    .sp-menu {
+      display: none;
+    }
+    .gnav {
+      display: block;
+      margin-left: auto;
+    }
+    .gnav ul {
+      display: flex;
+      gap: 4px;
+    }
+    .gnav a {
+      display: grid;
+      justify-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.2;
+      border-radius: 6px;
+      position: relative;
+    }
+    .gnav a:hover {
+      background: var(--c-orange-pale);
+      opacity: 1;
+    }
+    .gnav a[aria-current='page']::after {
+      content: '';
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 0;
+      height: 3px;
+      background: var(--c-orange);
+      border-radius: 2px;
+    }
+    .gnav :global(.gnav__icon) {
+      width: 30px;
+      height: 30px;
+      color: var(--c-orange);
+    }
+    .header__contact {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: none;
+    }
+    .header__tel {
+      display: grid;
+      line-height: 1.2;
+    }
+    .header__tel-label {
+      font-size: 11px;
+      color: var(--c-muted);
+      font-weight: 700;
+    }
+    .header__tel-number {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: var(--font-en);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--c-black);
+      letter-spacing: 0.02em;
+    }
+    .header__tel :global(.header__tel-icon) {
+      width: 22px;
+      height: 22px;
+      color: var(--c-orange);
+    }
+    .header__cta {
+      min-height: 48px;
+      padding-inline: 20px;
+      font-size: 15px;
+    }
+  }
+  @media (min-width: 1001px) and (max-width: 1240px) {
+    .gnav a {
+      padding-inline: 8px;
+      font-size: 12px;
+    }
+    .header__tel-number {
+      font-size: 20px;
+    }
+    .header__logo img {
+      width: 160px;
+    }
+  }
+</style>

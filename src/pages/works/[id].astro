@@ -1,0 +1,204 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import Sugitora from '@/components/Sugitora.astro';
+import BeforeAfter from '@/components/BeforeAfter.astro';
+import WorkCard from '@/components/WorkCard.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import { getWorks, imgUrl, toArray, excerpt, formatDate, usingSampleData, type WorkItem } from '@/lib/microcms';
+import { worksCategorySlug } from '@/data/reform';
+
+export async function getStaticPaths() {
+  const works = await getWorks();
+  return works.map((w) => ({ params: { id: w.id }, props: { work: w, all: works } }));
+}
+const { work, all } = Astro.props as { work: WorkItem; all: WorkItem[] };
+const cats = toArray(work.category);
+const hasBA = Boolean(work.beforeImage && work.afterImage);
+// 片方しか無い場合は追加写真として自然に並べる
+const gallery: { url: string; width?: number; height?: number; label?: string }[] = [];
+if (!hasBA && work.beforeImage) gallery.push({ ...work.beforeImage, label: '施工前' });
+if (!hasBA && work.afterImage) gallery.push({ ...work.afterImage, label: '施工後' });
+for (const g of work.gallery ?? []) gallery.push(g);
+const related = all.filter((w) => w.id !== work.id && toArray(w.category).some((c) => cats.includes(c))).slice(0, 3);
+const specs: { label: string; value: string }[] = [
+  { label: '施工カテゴリー', value: cats.join('、') },
+  { label: '工事内容', value: work.workContent },
+  { label: '施工エリア', value: work.area ?? '' },
+  { label: '建物種別', value: work.buildingType ?? '' },
+  { label: '工期', value: work.period ?? '' },
+  { label: '費用', value: work.cost ?? '' },
+].filter((s) => s.value && s.value.trim() !== '');
+const description = `${work.title}｜${work.workContent}${work.area ? `（${work.area}）` : ''}。${excerpt(work.body, 80)}`;
+---
+
+<BaseLayout title={work.title} description={description} ogImage={imgUrl(work.mainImage, 1200, { height: 630 })} ogType="article">
+  <Breadcrumb items={[{ label: '施工実績', href: '/works/' }, { label: work.title }]} />
+  <article class="section">
+    <div class="container work">
+      <header class="work__head">
+        <div class="work__tags">
+          {cats.map((c) => <a class="tag" href={`/works/category/${worksCategorySlug(c)}/`}>{c}</a>)}
+          {usingSampleData && <span class="badge-sample">サンプルデータ</span>}
+        </div>
+        <h1 class="work__title">{work.title}</h1>
+        {work.publishedAt && <p class="work__date">掲載日：<time datetime={work.publishedAt}>{formatDate(work.publishedAt)}</time></p>}
+      </header>
+
+      <div class="work__main">
+        <figure class="work__mainimg">
+          <img src={imgUrl(work.mainImage, 1200)} alt={work.title} width={work.mainImage.width ?? 1200} height={work.mainImage.height ?? 900} loading="eager" fetchpriority="high" decoding="async" />
+        </figure>
+        <aside class="work__spec">
+          <dl class="dl-table">
+            {specs.map((s) => <div><dt>{s.label}</dt><dd>{s.value}</dd></div>)}
+          </dl>
+          {!work.cost && <p class="note" style="margin-top:10px">費用は工事内容・建物の状態により異なります。個別にお見積りいたします。</p>}
+          <div class="work__sugi"><Sugitora pose="kirei" width={150} /></div>
+        </aside>
+      </div>
+
+      {
+        hasBA && (
+          <div class="work__ba">
+            <BeforeAfter
+              before={{ src: imgUrl(work.beforeImage!, 900, { height: 675 }), width: 900, height: 675 }}
+              after={{ src: imgUrl(work.afterImage!, 900, { height: 675 }), width: 900, height: 675 }}
+              alt={work.title}
+            />
+          </div>
+        )
+      }
+
+      {
+        work.body && (
+          <section class="work__body">
+            <h2 class="bar-heading">工事の内容</h2>
+            <div class="prose" set:html={work.body} />
+          </section>
+        )
+      }
+
+      {
+        gallery.length > 0 && (
+          <section class="work__gallery">
+            <h2 class="bar-heading">施工写真</h2>
+            <ul class="gallery">
+              {gallery.map((g, i) => (
+                <li>
+                  <img src={imgUrl(g, 800, { height: 600 })} alt={`${work.title} 施工写真${i + 1}`} width={800} height={600} loading="lazy" decoding="async" />
+                  {g.label && <span class="gallery__label">{g.label}</span>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+
+      <div class="btn-row">
+        <a class="btn btn--outline" href="/works/">施工実績一覧へ戻る</a>
+      </div>
+    </div>
+  </article>
+
+  {
+    related.length > 0 && (
+      <section class="section bg-gray">
+        <div class="container">
+          <h2 class="bar-heading">関連する施工実績</h2>
+          <div class="grid grid--3">{related.map((w) => <WorkCard work={w} />)}</div>
+        </div>
+      </section>
+    )
+  }
+  <CtaSection pose="omakase" />
+</BaseLayout>
+
+<style>
+  .work__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .work__title {
+    font-size: clamp(22px, 3.2vw, 32px);
+    line-height: 1.4;
+  }
+  .work__date {
+    font-size: 13px;
+    color: var(--c-muted);
+    margin-top: 8px;
+  }
+  .work__main {
+    display: grid;
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .work__mainimg img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    background: var(--c-gray-bg);
+  }
+  .work__spec {
+    position: relative;
+  }
+  .work__spec .dl-table > div {
+    grid-template-columns: 150px 1fr;
+  }
+  .work__spec .dl-table dt,
+  .work__spec .dl-table dd {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  .work__sugi {
+    width: 120px;
+    margin: 16px 0 0 auto;
+  }
+  .work__ba,
+  .work__body,
+  .work__gallery {
+    margin-top: 48px;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .gallery li {
+    position: relative;
+  }
+  .gallery img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius);
+    background: var(--c-gray-bg);
+  }
+  .gallery__label {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    background: var(--c-black);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 0 4px 4px 0;
+  }
+  @media (min-width: 900px) {
+    .work__main {
+      grid-template-columns: 1.4fr 1fr;
+      gap: 36px;
+      align-items: start;
+    }
+  }
+  @media (max-width: 700px) {
+    .gallery {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+  }
+</style>

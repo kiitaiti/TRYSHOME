@@ -1,0 +1,11 @@
+---
+import WorksListPage from '@/components/WorksListPage.astro';
+import { getWorks } from '@/lib/microcms';
+import { chunk, PER_PAGE } from '@/lib/paginate';
+export async function getStaticPaths() {
+  const pages = chunk(await getWorks(), PER_PAGE);
+  return pages.slice(1).map((items, i) => ({ params: { page: String(i + 2) }, props: { items, page: i + 2, total: pages.length } }));
+}
+const { items, page, total } = Astro.props;
+---
+<WorksListPage items={items} page={page} total={total} base="/works/" />

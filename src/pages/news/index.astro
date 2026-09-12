@@ -1,0 +1,7 @@
+---
+import NewsListPage from '@/components/NewsListPage.astro';
+import { getNews } from '@/lib/microcms';
+import { chunk, NEWS_PER_PAGE } from '@/lib/paginate';
+const pages = chunk(await getNews(), NEWS_PER_PAGE);
+---
+<NewsListPage items={pages[0]} page={1} total={pages.length} />
