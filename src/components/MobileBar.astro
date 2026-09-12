@@ -4,8 +4,9 @@ import { site } from '@/data/site';
 ---
 
 <div class="mbar" aria-label="お問い合わせ導線">
-  <a href={site.telHref} class="mbar__tel"><Icon name="phone" /><span>電話で相談</span></a>
-  <a href="/contact/" class="mbar__form"><Icon name="mail" /><span>相談・見積りフォーム</span></a>
+  <a href={site.telHref} class="mbar__tel"><Icon name="phone" /><span>電話</span></a>
+  <a href={site.line} class="mbar__line" target="_blank" rel="noopener"><Icon name="chat" /><span>LINEで相談</span></a>
+  <a href="/contact/" class="mbar__form"><Icon name="mail" /><span>フォーム</span></a>
 </div>
 
 <style>
@@ -16,7 +17,7 @@ import { site } from '@/data/site';
     bottom: 0;
     z-index: 800;
     display: grid;
-    grid-template-columns: 1fr 1.4fr;
+    grid-template-columns: 0.8fr 1.3fr 1fr;
     height: 60px;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
     padding-bottom: env(safe-area-inset-bottom);
@@ -40,6 +41,10 @@ import { site } from '@/data/site';
   }
   .mbar__tel svg {
     color: var(--c-orange);
+  }
+  .mbar__line {
+    background: #06c755;
+    color: #fff;
   }
   .mbar__form {
     background: var(--c-orange);

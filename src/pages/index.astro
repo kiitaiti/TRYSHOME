@@ -13,8 +13,9 @@ import { site } from '@/data/site';
 import { reformCategories } from '@/data/reform';
 import { flowSteps, features, faqs } from '@/data/content';
 import { getWorks, getNews, imgUrl } from '@/lib/microcms';
-import heroPhoto from '@/assets/photos/photo-bath.jpg';
-import heroPhoto2 from '@/assets/photos/photo-floor.jpg';
+import heroLiving from '@/assets/photos/hero-living.jpg';
+import heroDining from '@/assets/photos/hero-dining.jpg';
+import heroKitchen from '@/assets/photos/hero-kitchen.jpg';
 import ceoPhoto from '@/assets/img/ceo.jpg';
 
 const works = await getWorks();
@@ -22,32 +23,38 @@ const featured = works.filter((w) => w.featured).slice(0, 6);
 const topWorks = featured.length >= 3 ? featured : works.slice(0, 6);
 const baWork = works.find((w) => w.beforeImage && w.afterImage);
 const news = (await getNews()).slice(0, 3);
+const heroSlides = [
+  { src: heroLiving, alt: '明るいリビングダイニング' },
+  { src: heroDining, alt: '白を基調としたダイニング' },
+  { src: heroKitchen, alt: '対面キッチン' },
+];
 ---
 
 <BaseLayout isHome description={site.description}>
-  <!-- 1. ファーストビュー -->
+  <!-- 1. ファーストビュー（スライドショー） -->
   <section class="hero" aria-label="メインビジュアル">
-    <div class="hero__photos" aria-hidden="true">
-      <Image class="hero__photo hero__photo--1" src={heroPhoto} alt="" width={1400} height={1000} loading="eager" fetchpriority="high" />
-      <Image class="hero__photo hero__photo--2" src={heroPhoto2} alt="" width={800} height={1000} loading="eager" />
+    <div class="hero__slides" aria-hidden="true">
+      {
+        heroSlides.map((sl, i) => (
+          <Image
+            class="hero__slide"
+            src={sl.src}
+            alt=""
+            width={1920}
+            height={1080}
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : undefined}
+            style={`animation-delay:${i * 6}s`}
+          />
+        ))
+      }
     </div>
-    <div class="container--wide hero__inner">
-      <div class="hero__copy reveal is-in">
-        <p class="hero__badge">東京都町田市のリフォーム会社</p>
-        <h1 class="hero__title">住まいが変わる。<br />毎日が変わる。</h1>
-        <p class="hero__sub">住まいのリフォーム、<strong>TRYS HOME</strong>にお任せ。</p>
-        <p class="hero__text">
-          水回り・内装・屋根外壁・エクステリアまで。<br class="pc" />
-          職人歴10年以上のプロフェッショナル集団が、高品質で丁寧な施工でお応えします。
-        </p>
-        <div class="hero__actions">
-          <a class="btn btn--primary btn--lg" href="/contact/"><Icon name="mail" />ご相談・お見積り</a>
-          <a class="btn btn--outline" href="/reform/">リフォームメニューを見る<span class="arrow"></span></a>
-        </div>
-      </div>
-      <div class="hero__sugi">
-        <Sugitora pose="omakase" width={330} loading="eager" float />
-      </div>
+    <div class="hero__inner">
+      <h1 class="hero__title">住まいが変わる。<br />毎日が変わる。</h1>
+      <p class="sr-only">住まいのリフォーム、TRYS HOMEにお任せ。東京都町田市のリフォーム会社です。</p>
+    </div>
+    <div class="hero__sugi">
+      <Sugitora pose="peace" width={300} loading="eager" float />
     </div>
   </section>
 
@@ -56,7 +63,6 @@ const news = (await getNews()).slice(0, 3);
     <div class="container">
       <div class="menu__head reveal">
         <SectionTitle en="REFORM MENU" ja="リフォームメニュー" id="menu-title" />
-        <div class="menu__sugi"><Sugitora pose="fists" width={150} alt="" /></div>
       </div>
       <p class="lead reveal">「ここが古くなってきた」「使いにくい」<br class="sp" />——<span class="em">相談したい場所</span>から選べます</p>
       <ul class="menu__grid">
@@ -205,6 +211,33 @@ const news = (await getNews()).slice(0, 3);
     </div>
   </section>
 
+  <!-- SNS・LINE -->
+  <section class="section sns" aria-labelledby="sns-title">
+    <div class="container">
+      <SectionTitle en="SNS" ja="LINE・SNSでもつながれます" id="sns-title" />
+      <div class="sns__grid">
+        <a class="sns-card sns-card--line reveal" href={site.line} target="_blank" rel="noopener">
+          <span class="sns-card__icon"><Icon name="chat" /></span>
+          <span class="sns-card__name">公式LINE</span>
+          <span class="sns-card__text">LINEでもリフォームのご相談を受け付けています。写真を送って気軽に相談できます。</span>
+          <span class="sns-card__btn">友だち追加してLINEで相談</span>
+        </a>
+        <a class="sns-card sns-card--insta reveal" href={site.instagram} target="_blank" rel="noopener" style="transition-delay:80ms">
+          <span class="sns-card__icon"><Icon name="camera" /></span>
+          <span class="sns-card__name">Instagram</span>
+          <span class="sns-card__text">施工の様子や現場の写真を投稿しています。</span>
+          <span class="sns-card__btn">{site.instagramId} を見る</span>
+        </a>
+        <a class="sns-card sns-card--tiktok reveal" href={site.tiktok} target="_blank" rel="noopener" style="transition-delay:160ms">
+          <span class="sns-card__icon"><Icon name="music" /></span>
+          <span class="sns-card__name">TikTok</span>
+          <span class="sns-card__text">職人の仕事ぶりを動画で紹介しています。</span>
+          <span class="sns-card__btn">{site.tiktokId} を見る</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- 8. よくある質問 -->
   <section class="section bg-orange-light faq" aria-labelledby="faq-title">
     <div class="container">
@@ -233,91 +266,98 @@ const news = (await getNews()).slice(0, 3);
   .hero {
     position: relative;
     overflow: hidden;
-    background: var(--c-orange-light);
+    background: var(--c-black);
+    height: clamp(420px, 58vw, 640px);
     isolation: isolate;
   }
-  .hero__photos {
+  .hero__slides {
     position: absolute;
     inset: 0;
     z-index: -1;
   }
-  .hero__photo {
+  .hero__slide {
     position: absolute;
-    object-fit: cover;
-  }
-  .hero__photo--1 {
     inset: 0;
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    animation: hero-fade 18s infinite;
   }
-  .hero__photo--2 {
-    display: none;
+  @keyframes hero-fade {
+    0% {
+      opacity: 0;
+      transform: scale(1.04);
+    }
+    6% {
+      opacity: 1;
+    }
+    33% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    40% {
+      opacity: 0;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+    }
   }
-  .hero__photos::after {
+  .hero__slides::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.86) 45%, rgba(255, 255, 255, 0.35) 100%);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.18) 60%, rgba(0, 0, 0, 0.38) 100%);
   }
   .hero__inner {
-    position: relative;
-    width: min(100% - 32px, var(--container-wide));
-    margin-inline: auto;
-    display: grid;
-    grid-template-columns: 1fr;
-    align-items: end;
-    min-height: 420px;
-    padding: 36px 0 0;
-  }
-  .hero__badge {
-    display: inline-block;
-    background: var(--c-orange);
-    color: #fff;
-    font-size: 13px;
-    font-weight: 700;
-    padding: 4px 12px;
-    border-radius: 4px;
-    letter-spacing: 0.06em;
+    position: absolute;
+    left: clamp(16px, 6vw, 96px);
+    bottom: clamp(40px, 9vw, 110px);
+    right: 16px;
   }
   .hero__title {
-    font-size: clamp(30px, 5.6vw, 54px);
+    color: #fff;
+    font-size: clamp(34px, 6.4vw, 72px);
+    font-weight: 700;
     line-height: 1.35;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    color: var(--c-black);
-    margin-top: 14px;
-  }
-  .hero__sub {
-    margin-top: 12px;
-    font-size: clamp(17px, 2.4vw, 24px);
-    font-weight: 700;
-    color: var(--c-orange-dark);
-  }
-  .hero__sub strong {
-    font-family: var(--font-en);
-    letter-spacing: 0.02em;
-  }
-  .hero__text {
-    margin-top: 12px;
-    font-size: 15px;
-    max-width: 560px;
-  }
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 22px;
-  }
-  .hero__actions .btn svg {
-    width: 20px;
-    height: 20px;
+    letter-spacing: 0.06em;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45), 0 0 2px rgba(0, 0, 0, 0.6);
   }
   .hero__sugi {
-    width: clamp(150px, 34vw, 320px);
-    justify-self: end;
-    margin-top: 8px;
-    margin-right: -8px;
-    align-self: end;
+    position: absolute;
+    right: clamp(8px, 4vw, 72px);
+    bottom: 0;
+    width: clamp(120px, 20vw, 260px);
+    z-index: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__slide {
+      animation: none;
+      opacity: 0;
+    }
+    .hero__slide:first-child {
+      opacity: 1;
+    }
+  }
+  @media (max-width: 600px) {
+    .hero {
+      height: 68vw;
+      min-height: 380px;
+    }
+    .hero__inner {
+      bottom: 28px;
+      right: 30%;
+    }
+    .hero__title {
+      font-size: 30px;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .hero__sugi {
+      width: 28vw;
+      right: 6px;
+    }
   }
   .pc {
     display: none;
@@ -326,28 +366,6 @@ const news = (await getNews()).slice(0, 3);
     display: inline;
   }
   @media (min-width: 768px) {
-    .hero__inner {
-      grid-template-columns: 1.4fr 1fr;
-      min-height: 560px;
-      padding: 56px 0 0;
-    }
-    .hero__copy {
-      padding-bottom: 56px;
-    }
-    .hero__photo--1 {
-      left: 30%;
-      width: 70%;
-    }
-    .hero__photo--2 {
-      display: block;
-      left: 0;
-      top: 0;
-      width: 30%;
-      height: 100%;
-    }
-    .hero__photos::after {
-      background: linear-gradient(90deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.9) 40%, rgba(255, 255, 255, 0.4) 70%, rgba(255, 255, 255, 0.15) 100%);
-    }
     .pc {
       display: inline;
     }
@@ -362,7 +380,6 @@ const news = (await getNews()).slice(0, 3);
   .flow__head {
     position: relative;
   }
-  .menu__sugi,
   .flow__sugi {
     position: absolute;
     right: 0;
@@ -376,12 +393,10 @@ const news = (await getNews()).slice(0, 3);
     width: clamp(110px, 16vw, 190px);
   }
   @media (max-width: 700px) {
-    .menu__head,
     .flow__head {
       display: grid;
       justify-items: center;
     }
-    .menu__sugi,
     .flow__sugi {
       position: static;
       width: 84px;
@@ -684,6 +699,77 @@ const news = (await getNews()).slice(0, 3);
     .news__inner {
       grid-template-columns: 240px 1fr;
       gap: 40px;
+    }
+  }
+
+  /* ---- sns ---- */
+  .sns__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .sns-card {
+    display: grid;
+    gap: 10px;
+    justify-items: center;
+    text-align: center;
+    padding: 28px 22px 26px;
+    border-radius: var(--radius-lg);
+    color: #fff;
+    transition: transform 0.2s var(--ease);
+  }
+  .sns-card:hover {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+  .sns-card--line {
+    background: #06c755;
+  }
+  .sns-card--insta {
+    background: #d6338f;
+  }
+  .sns-card--tiktok {
+    background: #222;
+  }
+  .sns-card__icon {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .sns-card__icon svg {
+    width: 34px;
+    height: 34px;
+  }
+  .sns-card__name {
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .sns-card__text {
+    font-size: 14px;
+    opacity: 0.95;
+  }
+  .sns-card__btn {
+    margin-top: 6px;
+    background: #fff;
+    color: var(--c-black);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 10px 20px;
+    border-radius: 999px;
+  }
+  .sns-card--line .sns-card__btn {
+    color: #06903d;
+  }
+  @media (max-width: 800px) {
+    .sns__grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .sns-card {
+      padding: 22px 18px;
     }
   }
 

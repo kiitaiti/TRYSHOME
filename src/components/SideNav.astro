@@ -1,0 +1,34 @@
+---
+/** PC用の固定導線（参考サイトの左右タブ）。SPでは MobileBar に切り替わる */
+import Icon from '@/components/Icon.astro';
+import { site } from '@/data/site';
+/** 縦書きはフォント環境で崩れることがあるため、1文字ずつ縦に並べる */
+const v = (t: string) => t.split('');
+---
+<nav class="side side--right" aria-label="ご相談窓口">
+  <a class="side__btn side__btn--line" href={site.line} target="_blank" rel="noopener"><Icon name="chat" /><span class="side__label">{v('LINEで相談').map((c) => <i>{c}</i>)}</span></a>
+  <a class="side__btn side__btn--form" href="/contact/"><Icon name="mail" /><span class="side__label">{v('お問い合わせ').map((c) => <i>{c}</i>)}</span></a>
+  <a class="side__btn side__btn--tel" href={site.telHref}><Icon name="phone" /><span class="side__label">{v('電話で相談').map((c) => <i>{c}</i>)}</span></a>
+</nav>
+<nav class="side side--left" aria-label="SNS">
+  <a class="side__btn side__btn--insta" href={site.instagram} target="_blank" rel="noopener"><Icon name="camera" /><span class="side__label">{v('Instagram').map((c) => <i>{c}</i>)}</span></a>
+  <a class="side__btn side__btn--tiktok" href={site.tiktok} target="_blank" rel="noopener"><Icon name="music" /><span class="side__label">{v('TikTok').map((c) => <i>{c}</i>)}</span></a>
+</nav>
+<style>
+  .side { position: fixed; top: 50%; transform: translateY(-50%); z-index: 850; display: none; flex-direction: column; gap: 6px; }
+  .side--right { right: 0; }
+  .side--left { left: 0; }
+  .side__btn { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 50px; padding: 14px 0 16px; color: #fff; font-weight: 700; font-size: 13px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: width 0.15s; }
+  .side__label { display: grid; justify-items: center; gap: 2px; line-height: 1.1; }
+  .side__label i { font-style: normal; display: block; }
+  .side--right .side__btn { border-radius: 8px 0 0 8px; }
+  .side--left .side__btn { border-radius: 0 8px 8px 0; }
+  .side__btn:hover { opacity: 1; width: 56px; }
+  .side__btn svg { width: 22px; height: 22px; }
+  .side__btn--line { background: #06c755; }
+  .side__btn--form { background: var(--c-orange); }
+  .side__btn--tel { background: var(--c-black); }
+  .side__btn--insta { background: #d6338f; }
+  .side__btn--tiktok { background: #222; }
+  @media (min-width: 901px) { .side { display: flex; } }
+</style>

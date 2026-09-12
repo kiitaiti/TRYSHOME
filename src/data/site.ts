@@ -43,6 +43,11 @@ export const site = {
   serviceAreaList: ['東京都', '神奈川県', '埼玉県', '千葉県'],
   instagram: 'https://www.instagram.com/tryshome2021/',
   instagramId: '@tryshome2021',
+  /** TikTok（既存サイトの埋め込みより） */
+  tiktok: 'https://www.tiktok.com/@teamtrys',
+  tiktokId: '@teamtrys',
+  /** 公式LINE（提供されたQRコードから読み取り） */
+  line: 'https://lin.ee/VATfFN5',
   history: [
     { year: '2013年1月', text: '個人事業主として創業。' },
     { year: '2021年3月', text: '東京都町田市にて株式会社TRYS設立。' },

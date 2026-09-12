@@ -40,7 +40,6 @@
     }
     document.body.classList.add('is-locked');
 
-    const stage = document.getElementById('loader-stage') as HTMLElement;
     const house = document.getElementById('loader-house') as HTMLElement;
     const oldImg = document.getElementById('loader-old') as HTMLImageElement;
     const newImg = document.getElementById('loader-new') as HTMLImageElement;
@@ -92,28 +91,29 @@
       if (!ready || done) return finish();
 
       loader.classList.add('is-ready');
-      const W = stage.clientWidth;
+      const W = window.innerWidth;
       const sugiW = sugi.offsetWidth;
-      const travel = 2000;
+      const travel = 2600;
+      const startX = -sugiW - 40;
+      const endX = W + 40;
 
-      // スギトラ：左から右へ通過（上下動つき）
-      const move = sugi.animate(
-        [{ transform: `translateX(${-sugiW - 24}px)` }, { transform: `translateX(${W + 24}px)` }],
-        { duration: travel, easing: 'linear', fill: 'forwards' },
-      );
-      sugiImg.animate(
-        [
-          { transform: 'translateY(0) rotate(-3deg)' },
-          { transform: 'translateY(-14px) rotate(3deg)' },
-          { transform: 'translateY(0) rotate(-3deg)' },
-        ],
-        { duration: 330, iterations: Math.ceil(travel / 330), easing: 'ease-in-out' },
-      );
+      // スギトラ：画面の左端の外から右端の外まで通過（上下動は同じアニメーションに含めて滑らかに）
+      const frames: Keyframe[] = [];
+      const steps = 26;
+      for (let i = 0; i <= steps; i++) {
+        const t = i / steps;
+        const x = startX + (endX - startX) * t;
+        const bob = Math.abs(Math.sin(t * Math.PI * 7)) * 16;
+        const tilt = Math.sin(t * Math.PI * 14) * 3;
+        frames.push({ transform: `translate3d(${x}px, ${-bob}px, 0) rotate(${tilt}deg)`, offset: t });
+      }
+      const move = sugi.animate(frames, { duration: travel, easing: 'linear', fill: 'forwards' });
 
-      // 家の前を通るタイミング（中央）で横回転を開始
-      await wait(travel * 0.46);
+      // 家の前（画面中央）を通るタイミングで横回転を開始
+      const half = 230;
+      const flipAt = travel * ((W / 2 - sugiW / 2 - startX) / (endX - startX)) - half * 0.6;
+      await wait(Math.max(200, flipAt));
       if (done) return;
-      const half = 240;
       await oldImg.animate([{ transform: 'scaleX(1)' }, { transform: 'scaleX(0.02)' }], {
         duration: half,
         easing: 'ease-in',
@@ -168,15 +168,15 @@
   }
   .loader__stage {
     position: relative;
-    width: min(100vw, 720px);
-    height: clamp(260px, 52vw, 380px);
+    width: 100vw;
+    height: clamp(220px, 40vw, 300px);
     overflow: hidden;
   }
   .loader__house {
     position: absolute;
     left: 50%;
     bottom: 24px;
-    width: clamp(200px, 46vw, 300px);
+    width: clamp(140px, 32vw, 210px);
     aspect-ratio: 1 / 1;
     transform: translateX(-50%);
     transform-origin: 50% 90%;
@@ -195,15 +195,17 @@
     object-position: center bottom;
     transform-origin: 50% 50%;
     will-change: transform;
+    backface-visibility: hidden;
   }
   .loader__sugi {
     position: absolute;
     left: 0;
     bottom: 12px;
-    width: clamp(96px, 20vw, 130px);
+    width: clamp(90px, 18vw, 120px);
     z-index: 2;
-    transform: translateX(-150%);
+    transform: translate3d(-150%, 0, 0);
     will-change: transform;
+    backface-visibility: hidden;
   }
   .loader__sugi img {
     width: 100%;

@@ -31,7 +31,8 @@ const path = Astro.url.pathname;
             <li>
               <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>
                 <Icon name={icons[n.href]} class="gnav__icon" />
-                <span>{n.label}</span>
+                <span class="gnav__long">{n.label}</span>
+                <span class="gnav__short">{n.short}</span>
               </a>
             </li>
           ))
@@ -44,6 +45,7 @@ const path = Astro.url.pathname;
         <span class="header__tel-label">リフォームのご相談</span>
         <span class="header__tel-number"><Icon name="phone" class="header__tel-icon" />{site.tel}</span>
       </a>
+      <a class="btn header__line" href={site.line} target="_blank" rel="noopener"><Icon name="chat" />LINEで相談</a>
       <a class="btn btn--primary header__cta" href="/contact/">ご相談・お見積り</a>
     </div>
 
@@ -71,7 +73,12 @@ const path = Astro.url.pathname;
       </ul>
       <div class="sp-menu__contact">
         <a class="btn btn--outline btn--block" href={site.telHref}><Icon name="phone" />{site.tel}</a>
+        <a class="btn btn--block sp-menu__line" href={site.line} target="_blank" rel="noopener"><Icon name="chat" />LINEで相談する</a>
         <a class="btn btn--primary btn--block" href="/contact/">ご相談・お見積りフォーム</a>
+        <div class="sp-menu__sns">
+          <a href={site.instagram} target="_blank" rel="noopener"><Icon name="camera" />Instagram</a>
+          <a href={site.tiktok} target="_blank" rel="noopener"><Icon name="music" />TikTok</a>
+        </div>
       </div>
     </nav>
   </div>
@@ -242,6 +249,35 @@ const path = Astro.url.pathname;
     gap: 12px;
     margin-top: 20px;
   }
+  .sp-menu__line {
+    background: #06c755;
+    color: #fff;
+  }
+  .sp-menu__sns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .sp-menu__sns a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .sp-menu__sns a:first-child {
+    background: #d6338f;
+  }
+  .sp-menu__sns a:last-child {
+    background: #222;
+  }
+  .sp-menu__sns svg {
+    width: 20px;
+    height: 20px;
+  }
 
   @media (min-width: 1001px) {
     .header__top {
@@ -273,8 +309,9 @@ const path = Astro.url.pathname;
       display: grid;
       justify-items: center;
       gap: 4px;
-      padding: 6px 12px;
+      padding: 6px 10px;
       font-size: 13px;
+      white-space: nowrap;
       font-weight: 700;
       line-height: 1.2;
       border-radius: 6px;
@@ -329,16 +366,41 @@ const path = Astro.url.pathname;
       height: 22px;
       color: var(--c-orange);
     }
-    .header__cta {
+    .header__cta,
+    .header__line {
       min-height: 48px;
-      padding-inline: 20px;
+      padding-inline: 18px;
       font-size: 15px;
+    }
+    .header__line {
+      background: #06c755;
+      color: #fff;
+      box-shadow: 0 3px 0 #04a546;
+      gap: 6px;
+    }
+    .header__line svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  .gnav__short {
+    display: none;
+  }
+  @media (min-width: 1001px) and (max-width: 1480px) {
+    .gnav__long {
+      display: none;
+    }
+    .gnav__short {
+      display: inline;
     }
   }
   @media (min-width: 1001px) and (max-width: 1240px) {
     .gnav a {
       padding-inline: 8px;
       font-size: 12px;
+    }
+    .header__line {
+      display: none;
     }
     .header__tel-number {
       font-size: 20px;

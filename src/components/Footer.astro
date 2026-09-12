@@ -21,7 +21,11 @@ const year = new Date().getFullYear();
         TEL <a href={site.telHref}>{site.tel}</a> ／ FAX {site.fax}<br />
         <span class="note">{site.license}</span>
       </address>
-      <a class="footer__insta" href={site.instagram} target="_blank" rel="noopener">Instagram {site.instagramId}</a>
+      <div class="footer__sns">
+        <a class="footer__sns-line" href={site.line} target="_blank" rel="noopener">LINEで相談</a>
+        <a class="footer__sns-insta" href={site.instagram} target="_blank" rel="noopener">Instagram</a>
+        <a class="footer__sns-tiktok" href={site.tiktok} target="_blank" rel="noopener">TikTok</a>
+      </div>
     </div>
     <nav class="footer__nav" aria-label="フッターナビゲーション">
       <div>
@@ -108,13 +112,28 @@ const year = new Date().getFullYear();
     margin-top: 6px;
     line-height: 1.9;
   }
-  .footer__insta {
+  .footer__sns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .footer__sns a {
     display: inline-block;
-    margin-top: 10px;
-    font-size: 14px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    color: #fff;
+    font-size: 13px;
     font-weight: 700;
-    color: var(--c-orange-dark);
-    text-decoration: underline;
+  }
+  .footer__sns-line {
+    background: #06c755;
+  }
+  .footer__sns-insta {
+    background: #d6338f;
+  }
+  .footer__sns-tiktok {
+    background: #222;
   }
   .footer__nav {
     display: grid;

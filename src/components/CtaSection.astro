@@ -23,7 +23,13 @@ const { pose = 'wave' } = Astro.props;
           <span class="cta__tel-number">{site.tel}</span>
         </a>
         <a class="btn btn--primary btn--lg" href="/contact/"><Icon name="mail" />ご相談・お見積りフォーム</a>
+        <a class="btn btn--lg cta__line" href={site.line} target="_blank" rel="noopener"><Icon name="chat" />LINEで相談する</a>
       </div>
+      <p class="cta__sns">
+        SNSでも施工の様子を発信中：
+        <a href={site.instagram} target="_blank" rel="noopener"><Icon name="camera" />Instagram {site.instagramId}</a>
+        <a href={site.tiktok} target="_blank" rel="noopener"><Icon name="music" />TikTok {site.tiktokId}</a>
+      </p>
     </div>
   </div>
 </section>
@@ -93,9 +99,34 @@ const { pose = 'wave' } = Astro.props;
     color: var(--c-orange-dark);
     box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
   }
-  .cta .btn--primary svg {
+  .cta .btn--primary svg,
+  .cta__line svg {
     width: 20px;
     height: 20px;
+  }
+  .cta__line {
+    background: #06c755;
+    color: #fff;
+    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.15);
+  }
+  .cta__sns {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+    margin-top: 20px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .cta__sns a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: underline;
+  }
+  .cta__sns svg {
+    width: 18px;
+    height: 18px;
   }
   .pc {
     display: none;
