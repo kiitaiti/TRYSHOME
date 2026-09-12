@@ -1,5 +1,5 @@
 ---
-import { imgUrl, toArray, type WorkItem, usingSampleData } from '@/lib/microcms';
+import { imgUrl, toArray, type WorkItem } from '@/lib/microcms';
 interface Props { work: WorkItem; loading?: 'lazy' | 'eager' }
 const { work, loading = 'lazy' } = Astro.props;
 const cats = toArray(work.category);
@@ -15,7 +15,7 @@ const hasBA = Boolean(work.beforeImage && work.afterImage);
   <div class="work-card__body">
     <div class="work-card__tags">
       {cats.map((c) => <span class="tag">{c}</span>)}
-      {usingSampleData && <span class="badge-sample">サンプル</span>}
+      
     </div>
     <p class="work-card__title">{work.title}</p>
     <p class="work-card__meta">

@@ -389,15 +389,16 @@ const heroSlides = [
     width: clamp(70px, 10vw, 120px);
   }
   /* スギトラは最初のカードの上に立ち、下半身はカードの裏に隠れる */
+  /* 画像の幅 190px → 高さ約206px。胸ポケットまで見える位置（約62%）でカードに重ねる */
   .works__grid-wrap {
     position: relative;
-    padding-top: clamp(70px, 9vw, 110px);
+    padding-top: 146px;
   }
   .works__sugi {
     position: absolute;
-    left: clamp(8px, 3vw, 40px);
+    left: 0;
     top: 0;
-    width: clamp(120px, 15vw, 190px);
+    width: 190px;
     z-index: 0;
   }
   .works__grid {
@@ -415,11 +416,11 @@ const heroSlides = [
       margin: -16px 0 4px;
     }
     .works__grid-wrap {
-      padding-top: 84px;
+      padding-top: 100px;
     }
     .works__sugi {
-      width: 120px;
-      left: 12px;
+      width: 130px;
+      left: 0;
     }
   }
   .menu__grid {

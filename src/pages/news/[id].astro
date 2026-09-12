@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import Sugitora from '@/components/Sugitora.astro';
 import CtaSection from '@/components/CtaSection.astro';
-import { getNews, imgUrl, toArray, excerpt, formatDate, newsDate, usingSampleData, type NewsItem } from '@/lib/microcms';
+import { getNews, imgUrl, toArray, excerpt, formatDate, newsDate, type NewsItem } from '@/lib/microcms';
 export async function getStaticPaths() {
   const news = await getNews();
   return news.map((n, i) => ({ params: { id: n.id }, props: { item: n, prev: news[i + 1] ?? null, next: news[i - 1] ?? null } }));
@@ -16,7 +16,7 @@ const cat = toArray(item.category)[0] ?? 'お知らせ';
   <article class="section">
     <div class="container post">
       <header class="post__head">
-        <p class="post__meta"><time datetime={newsDate(item)}>{formatDate(newsDate(item))}</time><span class="post__cat">{cat}</span>{usingSampleData && <span class="badge-sample">サンプルデータ</span>}</p>
+        <p class="post__meta"><time datetime={newsDate(item)}>{formatDate(newsDate(item))}</time><span class="post__cat">{cat}</span></p>
         <h1 class="post__title">{item.title}</h1>
       </header>
       {item.thumbnail && <figure class="post__thumb"><img src={imgUrl(item.thumbnail, 1200)} alt="" width={item.thumbnail.width ?? 1200} height={item.thumbnail.height ?? 800} loading="eager" decoding="async" /></figure>}

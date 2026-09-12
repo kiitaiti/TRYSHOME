@@ -14,6 +14,7 @@ import photoIh from '@/assets/photos/photo-ih.jpg';
 import photoToilet from '@/assets/photos/photo-toilet.jpg';
 import photoWashstand from '@/assets/photos/photo-washstand.jpg';
 import photoGaisoAfter from '@/assets/photos/photo-gaiso-after.jpg';
+import photoDaiku from '@/assets/photos/photo-daiku.jpg';
 
 export interface ReformSub {
   name: string;
@@ -205,8 +206,8 @@ export const reformCategories: ReformCategory[] = [
     troubles: ['部屋の間取りを変えたい', '造り付けの収納がほしい', '音が気になる部屋を防音したい', '古い建具や床の下地を直したい'],
     services: ['大工工事・木工事', '造作工事（造作家具・収納）', '防音工事', '内装下地工事'],
     subs: [],
-    photo: photoFloor,
-    photoAlt: '大工工事をした部屋',
+    photo: photoDaiku,
+    photoAlt: '木造大工工事の現場',
     worksCategory: '大工・造作',
   },
   {

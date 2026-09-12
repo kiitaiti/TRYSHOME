@@ -5,7 +5,7 @@ import Sugitora from '@/components/Sugitora.astro';
 import BeforeAfter from '@/components/BeforeAfter.astro';
 import WorkCard from '@/components/WorkCard.astro';
 import CtaSection from '@/components/CtaSection.astro';
-import { getWorks, imgUrl, toArray, excerpt, formatDate, usingSampleData, type WorkItem } from '@/lib/microcms';
+import { getWorks, imgUrl, toArray, excerpt, formatDate, type WorkItem } from '@/lib/microcms';
 import { worksCategorySlug } from '@/data/reform';
 
 export async function getStaticPaths() {
@@ -39,7 +39,7 @@ const description = `${work.title}｜${work.workContent}${work.area ? `（${work
       <header class="work__head">
         <div class="work__tags">
           {cats.map((c) => <a class="tag" href={`/works/category/${worksCategorySlug(c)}/`}>{c}</a>)}
-          {usingSampleData && <span class="badge-sample">サンプルデータ</span>}
+          
         </div>
         <h1 class="work__title">{work.title}</h1>
         {work.publishedAt && <p class="work__date">掲載日：<time datetime={work.publishedAt}>{formatDate(work.publishedAt)}</time></p>}

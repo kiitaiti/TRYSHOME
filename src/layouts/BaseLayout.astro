@@ -5,7 +5,6 @@ import Footer from '@/components/Footer.astro';
 import MobileBar from '@/components/MobileBar.astro';
 import SideNav from '@/components/SideNav.astro';
 import { site } from '@/data/site';
-import { usingSampleData } from '@/lib/microcms';
 
 interface Props {
   title?: string;
@@ -108,13 +107,6 @@ const ogImageUrl = new URL(ogImage, Astro.site);
   </head>
   <body>
     <a class="skip-link" href="#main">本文へ移動</a>
-    {
-      usingSampleData && (
-        <div class="sample-banner" role="status">
-          サンプルデータ表示中：microCMS が未設定のため、お知らせ・施工実績は確認用のサンプルです（実在の案件ではありません）。
-        </div>
-      )
-    }
     <Header />
     <main id="main" tabindex="-1">
       <slot />
@@ -143,15 +135,5 @@ const ogImageUrl = new URL(ogImage, Astro.site);
         els.forEach((el) => el.classList.add('is-in'));
       }
     </script>
-    <style>
-      .sample-banner {
-        background: #ffe9e9;
-        color: #a93226;
-        font-size: 13px;
-        text-align: center;
-        padding: 6px 12px;
-        border-bottom: 1px solid #f3b8b8;
-      }
-    </style>
   </body>
 </html>
