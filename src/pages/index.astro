@@ -94,11 +94,13 @@ const heroSlides = [
     <div class="container">
       <div class="works__head reveal">
         <SectionTitle en="WORKS" ja="施工実績" id="works-title" />
-        <div class="works__sugi"><Sugitora pose="kirei" width={190} /></div>
       </div>
       <p class="lead reveal">TRYS HOMEが手がけた<span class="em">実際の施工写真</span>をご紹介します</p>
-      <div class="grid grid--3">
+      <div class="works__grid-wrap">
+        <div class="works__sugi"><Sugitora pose="kirei" width={200} /></div>
+      <div class="grid grid--3 works__grid">
         {topWorks.map((w, i) => <div class="reveal" style={`transition-delay:${i * 60}ms`}><WorkCard work={w} /></div>)}
+      </div>
       </div>
       {works.length === 0 && <p class="text-center note">施工実績は準備中です。</p>}
       <div class="btn-row">
@@ -386,11 +388,21 @@ const heroSlides = [
     bottom: -8px;
     width: clamp(70px, 10vw, 120px);
   }
+  /* スギトラは最初のカードの上に立ち、下半身はカードの裏に隠れる */
+  .works__grid-wrap {
+    position: relative;
+    padding-top: clamp(70px, 9vw, 110px);
+  }
   .works__sugi {
     position: absolute;
-    left: 0;
-    bottom: -10px;
-    width: clamp(110px, 16vw, 190px);
+    left: clamp(8px, 3vw, 40px);
+    top: 0;
+    width: clamp(120px, 15vw, 190px);
+    z-index: 0;
+  }
+  .works__grid {
+    position: relative;
+    z-index: 1;
   }
   @media (max-width: 700px) {
     .flow__head {
@@ -402,9 +414,12 @@ const heroSlides = [
       width: 84px;
       margin: -16px 0 4px;
     }
+    .works__grid-wrap {
+      padding-top: 84px;
+    }
     .works__sugi {
-      width: 96px;
-      bottom: -18px;
+      width: 120px;
+      left: 12px;
     }
   }
   .menu__grid {

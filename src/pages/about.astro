@@ -10,10 +10,11 @@ import { features, flowSteps } from '@/data/content';
 import { site } from '@/data/site';
 import photoFloor from '@/assets/photos/photo-floor.jpg';
 import photoIh from '@/assets/photos/photo-ih.jpg';
-import photoRoof from '@/assets/photos/photo-roof.jpg';
+import lixilLogo from '@/assets/img/logo-lixil-reformnet.jpg';
 import photoAircon from '@/assets/photos/photo-aircon.jpg';
-const photos = [photoFloor, photoIh, photoRoof, photoAircon];
-const alts = ['張り替えたフローリング', 'IHクッキングヒーターの設置', '屋根の施工', 'エアコンの取付'];
+const photos = [photoFloor, photoIh, lixilLogo, photoAircon];
+const alts = ['張り替えたフローリング', 'IHクッキングヒーターの設置', 'LIXIL リフォームネット 加盟店', 'エアコンの取付'];
+const logoIndex = 2;
 ---
 <BaseLayout title="TRYS HOMEが選ばれる理由" description="TRYS HOME（株式会社TRYS）が選ばれる理由。職人歴10年以上のプロフェッショナル集団による高品質で丁寧な施工、建設業許可、設計から施工・住設資材販売までの一貫対応をご紹介します。">
   <PageHero title="TRYS HOMEが選ばれる理由" en="REASON" image={photoFloor} />
@@ -25,7 +26,7 @@ const alts = ['張り替えたフローリング', 'IHクッキングヒータ�
       <div class="reasons">
         {features.map((f, i) => (
           <article class="reason reveal">
-            <div class="reason__img"><Image src={photos[i]} alt={alts[i]} width={720} height={500} loading={i === 0 ? 'eager' : 'lazy'} /></div>
+            <div class:list={['reason__img', { 'reason__img--logo': i === logoIndex }]}><Image src={photos[i]} alt={alts[i]} width={720} height={i === logoIndex ? 720 : 500} loading={i === 0 ? 'eager' : 'lazy'} /></div>
             <div class="reason__body">
               <span class="reason__num">POINT {String(i + 1).padStart(2, '0')}</span>
               <h3 class="reason__title">{f.title}</h3>
@@ -72,6 +73,8 @@ const alts = ['張り替えたフローリング', 'IHクッキングヒータ�
   .reasons { display: grid; gap: 40px; }
   .reason { display: grid; gap: 18px; align-items: center; }
   .reason__img img { width: 100%; height: auto; border-radius: var(--radius-lg); aspect-ratio: 36/25; object-fit: cover; }
+  .reason__img--logo { background: #fff; border: 1px solid var(--c-gray-line); border-radius: var(--radius-lg); display: grid; place-items: center; aspect-ratio: 36/25; }
+  .reason__img--logo img { width: 58%; aspect-ratio: 1; object-fit: contain; border-radius: 0; }
   .reason__num { font-family: var(--font-en); font-weight: 700; color: var(--c-orange); letter-spacing: 0.12em; }
   .reason__title { font-size: clamp(19px, 2.4vw, 24px); margin: 6px 0 10px; }
   .strength { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; margin-top: 48px; background: var(--c-orange-light); border-radius: var(--radius-lg); padding: 24px; }

@@ -13,7 +13,7 @@ import photoAircon from '@/assets/photos/photo-aircon.jpg';
 import photoIh from '@/assets/photos/photo-ih.jpg';
 import photoToilet from '@/assets/photos/photo-toilet.jpg';
 import photoWashstand from '@/assets/photos/photo-washstand.jpg';
-import houseNew from '@/assets/img/house-new.png';
+import photoGaisoAfter from '@/assets/photos/photo-gaiso-after.jpg';
 
 export interface ReformSub {
   name: string;
@@ -159,6 +159,13 @@ export const reformCategories: ReformCategory[] = [
     services: ['屋根の塗装・改修', '外壁の塗装', '付帯部（雨樋・軒天など）の補修', '現地調査・点検のご相談'],
     subs: [
       {
+        name: '外壁塗装',
+        text: '外壁の状態を確認し、塗り替えで住まいの印象と耐久性を整えます。',
+        troubles: ['外壁の色あせ・汚れ', 'ひび割れが気になる'],
+        photo: photoGaisoAfter,
+        photoAlt: '外壁塗装をした住まい',
+      },
+      {
         name: '屋根工事',
         text: '屋根材の状態を確認し、塗装や葺き替えなど適した方法をご案内します。',
         troubles: ['雨漏りが心配', '屋根材の劣化'],
@@ -166,8 +173,8 @@ export const reformCategories: ReformCategory[] = [
         photoAlt: '施工した屋根',
       },
     ],
-    photo: photoRoof,
-    photoAlt: '施工した屋根',
+    photo: photoGaisoAfter,
+    photoAlt: '外壁塗装をした住まい',
     worksCategory: '屋根外壁',
   },
   {
@@ -182,8 +189,8 @@ export const reformCategories: ReformCategory[] = [
     troubles: ['玄関まわりを整えたい', 'フェンスや門扉が古い', '駐車スペースを使いやすくしたい', '庭の手入れをラクにしたい'],
     services: ['アプローチ・玄関まわりの工事', 'フェンス・門扉の設置・交換', '駐車スペース・カーポートのご相談', 'お庭の整備'],
     subs: [],
-    photo: houseNew,
-    photoAlt: '住まいの外まわりのイメージイラスト',
+    photo: photoGaisoAfter,
+    photoAlt: '外まわりを整えた住まい',
     worksCategory: 'エクステリア',
   },
   {

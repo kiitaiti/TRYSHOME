@@ -137,32 +137,31 @@
   },
   {
     "id": "sample-beforeafter",
-    "title": "【サンプル】Before／After表示の確認用（イラスト）",
+    "title": "【サンプル】外壁塗装で住まいの印象を一新",
     "mainImage": {
-      "url": "/sample/house-new.png",
-      "width": 900,
-      "height": 823
+      "url": "/sample/photo-gaiso-after.jpg",
+      "width": 1440,
+      "height": 1440
     },
     "category": [
-      "屋根外壁",
-      "エクステリア"
+      "屋根外壁"
     ],
     "area": "（サンプル）町田市",
     "buildingType": "戸建",
-    "workContent": "外装の全面改修（表示確認用のサンプル）",
-    "period": "（サンプル）約1か月",
+    "workContent": "外壁塗装",
+    "period": "（サンプル）約2週間",
     "cost": "（サンプル）個別お見積り",
     "beforeImage": {
-      "url": "/sample/house-old.png",
-      "width": 898,
-      "height": 900
+      "url": "/sample/photo-gaiso-before.jpg",
+      "width": 1440,
+      "height": 1440
     },
     "afterImage": {
-      "url": "/sample/house-new.png",
-      "width": 900,
-      "height": 823
+      "url": "/sample/photo-gaiso-after.jpg",
+      "width": 1440,
+      "height": 1440
     },
-    "body": "<h2>見出しの表示例</h2><p>Before／Afterが両方登録されている場合の比較表示と、任意項目をすべて入力した場合の表示確認用サンプルです。実在の案件ではありません。</p><ul><li>リスト表示の例</li><li>リスト表示の例</li></ul>",
+    "body": "<p>サンプルデータです。Before／After写真が両方登録されている場合の比較表示の確認用です。エリア・工期・費用の値は表示確認のための仮の値で、実際の案件情報ではありません。</p>",
     "featured": true,
     "publishedAt": "2026-02-20T00:00:00.000Z"
   },
@@ -186,9 +185,9 @@
     "id": "sample-ex",
     "title": "【サンプル】玄関アプローチの工事",
     "mainImage": {
-      "url": "/sample/house-new.png",
-      "width": 900,
-      "height": 823
+      "url": "/sample/photo-gaiso-after.jpg",
+      "width": 1440,
+      "height": 1440
     },
     "category": [
       "エクステリア"
