@@ -1,854 +1,331 @@
 ---
-import { Image } from 'astro:assets';
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import Loader from '@/components/Loader.astro';
-import SectionTitle from '@/components/SectionTitle.astro';
-import Sugitora from '@/components/Sugitora.astro';
-import Icon from '@/components/Icon.astro';
-import WorkCard from '@/components/WorkCard.astro';
-import NewsList from '@/components/NewsList.astro';
-import CtaSection from '@/components/CtaSection.astro';
-import BeforeAfter from '@/components/BeforeAfter.astro';
-import { site } from '@/data/site';
-import { reformCategories } from '@/data/reform';
-import { flowSteps, features, faqs } from '@/data/content';
-import { getWorks, getNews, imgUrl } from '@/lib/microcms';
-import heroLiving from '@/assets/photos/hero-living.jpg';
-import heroDining from '@/assets/photos/hero-dining.jpg';
-import heroKitchen from '@/assets/photos/hero-kitchen.jpg';
-import ceoPhoto from '@/assets/img/ceo.jpg';
+import Base from '../layouts/Base.astro';
+import Picture from '../components/Picture.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Icon from '../components/Icon.astro';
+import Sugitora from '../components/Sugitora.astro';
+import WorkCard from '../components/WorkCard.astro';
+import Cta from '../components/Cta.astro';
+import { site } from '../config/site';
+import { services, flow, faqs, supports } from '../data/content';
+import { getAllBlogs, getAllWorks, formatDate } from '../lib/microcms';
 
-const works = await getWorks();
-const featured = works.filter((w) => w.featured).slice(0, 6);
-const topWorks = featured.length >= 3 ? featured : works.slice(0, 6);
-const baWork = works.find((w) => w.beforeImage && w.afterImage);
-const news = (await getNews()).slice(0, 3);
-const heroSlides = [
-  { src: heroLiving, alt: '明るいリビングダイニング' },
-  { src: heroDining, alt: '白を基調としたダイニング' },
-  { src: heroKitchen, alt: '対面キッチン' },
-];
+const blogs = (await getAllBlogs()).slice(0, 3);
+const works = (await getAllWorks()).slice(0, 6);
+const topFaqs = faqs.filter((f) => f.top);
 ---
-
-<BaseLayout isHome description={site.description}>
-  <!-- 1. ファーストビュー（スライドショー） -->
-  <section class="hero" aria-label="メインビジュアル">
-    <div class="hero__slides" aria-hidden="true">
-      {
-        heroSlides.map((sl, i) => (
-          <Image
-            class="hero__slide"
-            src={sl.src}
-            alt=""
-            width={1920}
-            height={1080}
-            loading={i === 0 ? 'eager' : 'lazy'}
-            fetchpriority={i === 0 ? 'high' : undefined}
-            style={`animation-delay:${i * 6}s`}
-          />
-        ))
-      }
+<Base transparentHeader>
+  <!-- 1. ファーストビュー -->
+  <section class="hero">
+    <div class="hero__img">
+      <Picture name="car-red-coupe" alt="" sizes="100vw" loading="eager" fetchpriority="high" decoding="sync" />
     </div>
-    <div class="hero__inner">
-      <h1 class="hero__title">住まいが変わる。<br />毎日が変わる。</h1>
-      <p class="sr-only">住まいのリフォーム、TRYS HOMEにお任せ。東京都町田市のリフォーム会社です。</p>
-    </div>
-    <div class="hero__sugi">
-      <Sugitora pose="peace" width={300} loading="eager" float />
+    <div class="hero__inner container">
+      <h1 class="hero__copy">あなたに合う一台を、<br />一緒に。</h1>
     </div>
   </section>
 
-  <!-- 2. 住まいのお悩み・リフォームメニュー -->
-  <section class="section menu" aria-labelledby="menu-title">
-    <div class="container">
-      <div class="menu__head reveal">
-        <SectionTitle en="REFORM MENU" ja="リフォームメニュー" id="menu-title" />
+  <!-- 2. 最新情報 -->
+  <section class="news section--alt">
+    <div class="container news__inner">
+      <div class="news__head">
+        <span class="news__en" aria-hidden="true">NEWS</span>
+        <h2 class="news__ja">最新情報</h2>
       </div>
-      <p class="lead reveal">「ここが古くなってきた」「使いにくい」<br class="sp" />——<span class="em">相談したい場所</span>から選べます</p>
-      <ul class="menu__grid">
-        {
-          reformCategories.map((c, i) => (
-            <li class="reveal" style={`transition-delay:${i * 60}ms`}>
-              <a class="menu-card" href={`/reform/${c.slug}/`}>
-                <div class="menu-card__img">
-                  <Image src={c.photo} alt={c.photoAlt} width={520} height={360} loading={i < 3 ? 'eager' : 'lazy'} />
-                </div>
-                <div class="menu-card__body">
-                  <span class="menu-card__icon"><Icon name={c.icon} /></span>
-                  <span class="menu-card__name">{c.name}</span>
-                  <span class="menu-card__lead">{c.lead}</span>
-                </div>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-      <p class="note text-center" style="margin-top:20px">
-        上記以外の工事や「どこに頼めばいいか分からない」というご相談も承ります。新築のご相談も可能です。
-      </p>
-    </div>
-  </section>
-
-  <!-- 3. 施工実績 -->
-  <section class="section bg-gray works" aria-labelledby="works-title">
-    <div class="container">
-      <div class="works__head reveal">
-        <SectionTitle en="WORKS" ja="施工実績" id="works-title" />
-      </div>
-      <p class="lead reveal">TRYS HOMEが手がけた<span class="em">実際の施工写真</span>をご紹介します</p>
-      <div class="works__grid-wrap">
-        <div class="works__sugi"><Sugitora pose="kirei" width={200} /></div>
-      <div class="grid grid--3 works__grid">
-        {topWorks.map((w, i) => <div class="reveal" style={`transition-delay:${i * 60}ms`}><WorkCard work={w} /></div>)}
-      </div>
-      </div>
-      {works.length === 0 && <p class="text-center note">施工実績は準備中です。</p>}
-      <div class="btn-row">
-        <a class="btn btn--outline" href="/works/">施工実績一覧はこちら<span class="arrow"></span></a>
-      </div>
-    </div>
-  </section>
-
-  {
-    baWork && (
-      <section class="section" aria-labelledby="ba-title">
-        <div class="container">
-          <h2 id="ba-title" class="sr-only">施工前後の変化</h2>
-          <div class="reveal">
-            <BeforeAfter
-              before={{ src: imgUrl(baWork.beforeImage!, 800, { height: 600 }), width: 800, height: 600 }}
-              after={{ src: imgUrl(baWork.afterImage!, 800, { height: 600 }), width: 800, height: 600 }}
-              alt={baWork.title}
-            />
-            <p class="text-center" style="margin-top:16px">
-              <a href={`/works/${baWork.id}/`} class="ba-link">{baWork.title} の詳細を見る ›</a>
-            </p>
-          </div>
-        </div>
-      </section>
-    )
-  }
-
-  <!-- 4. TRYS HOMEの特長 -->
-  <section class="section bg-orange-pale reason" aria-labelledby="reason-title">
-    <div class="container">
-      <SectionTitle en="REASON" ja="TRYS HOMEが選ばれる理由" id="reason-title" />
-      <div class="reason__wrap">
-        <ol class="reason__list">
-          {
-            features.map((f, i) => (
-              <li class="reason__item reveal" style={`transition-delay:${i * 80}ms`}>
-                <span class="reason__num">{String(i + 1).padStart(2, '0')}</span>
-                <div>
-                  <h3 class="reason__title">{f.title}</h3>
-                  <p class="reason__text">{f.text}</p>
-                </div>
+      <div class="news__body">
+        {blogs.length ? (
+          <ul class="news__list">
+            {blogs.map((b) => (
+              <li>
+                <a href={`/blog/${b.id}/`} class="news__item">
+                  <time class="date" datetime={b.publishedAt}>{formatDate(b.publishedAt)}</time>
+                  {b.category && <span class="tag">{b.category}</span>}
+                  <span class="news__title">{b.title}</span>
+                </a>
               </li>
-            ))
-          }
-        </ol>
-        <div class="reason__sugi">
-          <Sugitora pose="peace" width={260} float />
-          <p class="reason__bubble">職人の技術で<br />丁寧に仕上げます！</p>
-        </div>
-      </div>
-      <div class="btn-row">
-        <a class="btn btn--outline" href="/about/">選ばれる理由をくわしく<span class="arrow"></span></a>
+            ))}
+          </ul>
+        ) : (
+          <p class="note">現在お知らせはありません。</p>
+        )}
+        <a class="more news__more" href="/blog/">MORE <span class="more__circle"><Icon name="arrow" /></span></a>
       </div>
     </div>
   </section>
 
-  <!-- 5. 相談から施工までの流れ -->
-  <section class="section flow" aria-labelledby="flow-title">
+  <!-- 3. TRYS MOTORSについて -->
+  <section class="section about">
+    <div class="container about__inner">
+      <div class="about__text reveal">
+        <SectionHead en="ABOUT" ja="町田で、店舗を持たずに。<br />だから無駄のない価格で。" />
+        <p>TRYS MOTORS（トライスモータース）は、町田を拠点に中古車・バイクの販売と買取を行う小さな車屋です。一般的な販売店と違い店舗を構えず、その分の経費を省いて価格に反映しています。</p>
+        <p>大切にしているのは、お客様との信頼関係。国家二級整備士が一台一台を細かく点検し、問題のある車は販売しません。ご要望をじっくり伺い、一緒に最適な一台を考えます。</p>
+        <a class="more mt-24" href="/about/">MORE <span class="more__circle"><Icon name="arrow" /></span></a>
+      </div>
+      <div class="about__visual reveal">
+        <Picture name="shop-container-kei" alt="TRYS MOTORSのコンテナ前に停まる軽自動車" sizes="(max-width: 900px) 100vw, 560px" class="about__photo" />
+        <div class="about__mascot"><Sugitora variant="omakase" size={190} /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. サービス -->
+  <section class="section section--alt service">
     <div class="container">
-      <div class="flow__head reveal">
-        <SectionTitle en="FLOW" ja="ご相談から施工までの流れ" id="flow-title" />
-        <div class="flow__sugi"><Sugitora pose="bow" width={130} alt="" /></div>
+      <SectionHead en="SERVICE" ja="販売・買取から、その後のメンテナンスまで" lead="中古車・バイクの販売と買取を中心に、購入後のメンテナンスや車検代行まで対応しています。" />
+      <ul class="service__list">
+        {services.map((s) => (
+          <li class="service__item reveal">
+            <a href={`/service/#${s.id}`} class="service__link">
+              <div class="service__img"><Picture name={s.image} alt="" sizes="(max-width: 900px) 100vw, 580px" /></div>
+              <div class="service__body">
+                <span class="service__en" aria-hidden="true">{s.en}</span>
+                <h3 class="service__title">{s.title}</h3>
+                <p class="service__lead">{s.lead}</p>
+                <span class="more">MORE <span class="more__circle"><Icon name="arrow" /></span></span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. 在庫車一覧への導線 -->
+  <section class="stock">
+    <div class="stock__bg"><Picture name="car-blue-suv" alt="" sizes="(max-width: 900px) 100vw, 700px" class="stock__car" /></div>
+    <div class="container stock__inner">
+      <div class="stock__text reveal">
+        <span class="stock__en" aria-hidden="true">STOCK CAR</span>
+        <h2 class="stock__ja">在庫車一覧</h2>
+        <p>現在販売中の在庫は、カーセンサーの店舗ページでご覧いただけます。気になる一台があれば、掲載ページを見たうえでお気軽にご連絡ください。在庫にない車種もお探しできます。</p>
+        <a class="btn btn--primary btn--lg" href={site.links.stock} target="_blank" rel="noopener">カーセンサーで在庫車を見る<Icon name="external" class="btn__ext" /></a>
+        <p class="stock__note">※ 外部サイト（カーセンサー）が開きます</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 購入後のサポート -->
+  <section class="section support">
+    <div class="container">
+      <SectionHead en="SUPPORT" ja="売って終わりにしない。<br />購入後のカーライフもサポートします" center />
+      <ul class="support__list">
+        {supports.map((s) => (
+          <li class="support__item reveal">
+            <Icon name="check" class="support__icon" />
+            <div>
+              <h3 class="support__title">{s.title}</h3>
+              <p class="support__text">{s.text}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+      <p class="note center mt-24">※ 自社保証は、事故や故意による故障を除き、現車確認をしていただいたお客様が対象です。詳しい条件はお問い合わせください。</p>
+    </div>
+  </section>
+
+  <!-- 7. 売買実績 -->
+  <section class="section section--alt works">
+    <div class="container">
+      <div class="works__head">
+        <SectionHead en="WORKS" ja="売買実績" lead="これまでに販売・買取をさせていただいたお車の一部をご紹介します。" class="works__sec-head" />
+        <a class="more works__more" href="/works/">MORE <span class="more__circle"><Icon name="arrow" /></span></a>
+      </div>
+      {works.length ? (
+        <ul class="grid grid--3">
+          {works.map((w) => <li class="reveal"><WorkCard work={w} /></li>)}
+        </ul>
+      ) : (
+        <div class="empty"><p>実績は準備中です。</p></div>
+      )}
+      <p class="note mt-24">※ 売買実績は過去の事例です。現在販売中のお車は<a class="text-brand" href={site.links.stock} target="_blank" rel="noopener">在庫車一覧</a>をご覧ください。</p>
+    </div>
+  </section>
+
+  <!-- 8. ご相談から納車まで -->
+  <section class="section flow">
+    <div class="container">
+      <div class="flow__head">
+        <SectionHead en="FLOW" ja="ご相談から納車までの流れ" lead="初めての方にも分かりやすいよう、実際の進め方に沿ってご案内します。" />
+        <div class="flow__mascot"><Sugitora variant="okiniiri" size={170} /></div>
       </div>
       <ol class="flow__list">
-        {
-          flowSteps.map((s, i) => (
-            <li class="flow__step reveal" style={`transition-delay:${i * 60}ms`}>
-              <span class="flow__num">STEP {i + 1}</span>
-              <h3 class="flow__title">{s.title}</h3>
-              <p class="flow__text">{s.text}</p>
-            </li>
-          ))
-        }
+        {flow.map((f) => (
+          <li class="flow__item reveal">
+            <span class="flow__step" aria-hidden="true">{f.step}</span>
+            <h3 class="flow__title">{f.title}</h3>
+            <p class="flow__text">{f.text}</p>
+          </li>
+        ))}
       </ol>
     </div>
   </section>
 
-  <!-- 6. 会社・代表の紹介 -->
-  <section class="section bg-gray company" aria-labelledby="company-title">
-    <div class="container company__inner">
-      <div class="company__photo reveal">
-        <Image src={ceoPhoto} alt={`${site.representative}`} width={720} height={543} loading="lazy" />
-        <p class="company__name">{site.representative}</p>
+  <!-- 9. よくある質問 -->
+  <section class="section section--alt faq-top">
+    <div class="container faq-top__inner">
+      <div class="faq-top__side">
+        <SectionHead en="FAQ" ja="よくある質問" />
+        <Sugitora variant="peace" size={150} class="faq-top__mascot" />
+        <a class="more" href="/faq/">MORE <span class="more__circle"><Icon name="arrow" /></span></a>
       </div>
-      <div class="company__body reveal">
-        <SectionTitle en="COMPANY" ja="会社・代表のご紹介" id="company-title" align="left" />
-        <p class="company__greeting">{site.greeting}</p>
-        <dl class="company__dl">
-          <div><dt>会社名</dt><dd>{site.corp}（{site.brand}）</dd></div>
-          <div><dt>所在地</dt><dd>{site.postal} {site.address}</dd></div>
-          <div><dt>建設業許可</dt><dd>{site.license}</dd></div>
-          <div><dt>対応エリア</dt><dd>{site.serviceArea}</dd></div>
-        </dl>
-        <div class="btn-row" style="justify-content:flex-start">
-          <a class="btn btn--outline" href="/company/">会社概要・代表挨拶<span class="arrow"></span></a>
-        </div>
+      <div class="faq-top__list">
+        {topFaqs.map((f, i) => (
+          <details class="faq" open={i === 0 ? true : undefined}>
+            <summary class="faq__q"><span class="faq__mark">Q</span><span>{f.q}</span><Icon name="chevron" class="faq__chev" /></summary>
+            <div class="faq__a"><span class="faq__mark faq__mark--a">A</span><p>{f.a}</p></div>
+          </details>
+        ))}
       </div>
     </div>
   </section>
 
-  <!-- 7. お知らせ -->
-  <section class="section-tight news" aria-labelledby="news-title">
-    <div class="container news__inner">
-      <SectionTitle en="NEWS" ja="お知らせ" id="news-title" align="left" />
-      <div class="news__list">
-        <NewsList items={news} />
-        <p class="news__more"><a href="/news/">お知らせ一覧 ›</a></p>
+  <!-- 10. アクセス・相談案内 -->
+  <section class="section access">
+    <div class="container access__inner">
+      <div class="access__text reveal">
+        <SectionHead en="ACCESS" ja="アクセス・ご来店について" />
+        <table class="info-table">
+          <tbody>
+            <tr><th>店名</th><td>{site.name}（{site.nameJa}）</td></tr>
+            <tr><th>所在地</th><td>{site.address.full}</td></tr>
+            <tr><th>電話番号</th><td><a class="text-brand" href={site.telHref}>{site.tel}</a></td></tr>
+            <tr><th>営業時間</th><td>{site.hours}（{site.hoursNote}）</td></tr>
+          </tbody>
+        </table>
+        <p class="note note--box mt-24">{site.visitNote}</p>
+        <a class="more mt-24" href="/access/">MORE <span class="more__circle"><Icon name="arrow" /></span></a>
+      </div>
+      <div class="access__map reveal">
+        <iframe src={site.mapEmbedUrl} title="TRYS MOTORS 所在地の地図" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </div>
   </section>
 
-  <!-- SNS・LINE -->
-  <section class="section sns" aria-labelledby="sns-title">
-    <div class="container">
-      <SectionTitle en="SNS" ja="LINE・SNSでもつながれます" id="sns-title" />
-      <div class="sns__grid">
-        <a class="sns-card sns-card--line reveal" href={site.line} target="_blank" rel="noopener">
-          <span class="sns-card__icon"><Icon name="chat" /></span>
-          <span class="sns-card__name">公式LINE</span>
-          <span class="sns-card__text">LINEでもリフォームのご相談を受け付けています。写真を送って気軽に相談できます。</span>
-          <span class="sns-card__btn">友だち追加してLINEで相談</span>
-        </a>
-        <a class="sns-card sns-card--insta reveal" href={site.instagram} target="_blank" rel="noopener" style="transition-delay:80ms">
-          <span class="sns-card__icon"><Icon name="camera" /></span>
-          <span class="sns-card__name">Instagram</span>
-          <span class="sns-card__text">施工の様子や現場の写真を投稿しています。</span>
-          <span class="sns-card__btn">{site.instagramId} を見る</span>
-        </a>
-        <a class="sns-card sns-card--tiktok reveal" href={site.tiktok} target="_blank" rel="noopener" style="transition-delay:160ms">
-          <span class="sns-card__icon"><Icon name="music" /></span>
-          <span class="sns-card__name">TikTok</span>
-          <span class="sns-card__text">職人の仕事ぶりを動画で紹介しています。</span>
-          <span class="sns-card__btn">{site.tiktokId} を見る</span>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- 8. よくある質問 -->
-  <section class="section bg-orange-light faq" aria-labelledby="faq-title">
-    <div class="container">
-      <SectionTitle en="FAQ" ja="よくあるご質問" id="faq-title" />
-      <div class="faq__list">
-        {
-          faqs.map((f) => (
-            <details class="faq__item reveal">
-              <summary><span class="faq__q">Q</span>{f.q}</summary>
-              <div class="faq__a"><span class="faq__a-mark">A</span><p>{f.a}</p></div>
-            </details>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- 9. お問い合わせ -->
-  <CtaSection pose="wave" />
-
-  <Loader slot="after-body" />
-</BaseLayout>
+  <Cta />
+</Base>
 
 <style>
-  /* ---- hero ---- */
-  .hero {
-    position: relative;
-    overflow: hidden;
-    background: var(--c-black);
-    height: clamp(420px, 58vw, 640px);
-    isolation: isolate;
-  }
-  .hero__slides {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-  }
-  .hero__slide {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    animation: hero-fade 18s infinite;
-  }
-  @keyframes hero-fade {
-    0% {
-      opacity: 0;
-      transform: scale(1.04);
-    }
-    6% {
-      opacity: 1;
-    }
-    33% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    40% {
-      opacity: 0;
-      transform: scale(1);
-    }
-    100% {
-      opacity: 0;
-    }
-  }
-  .hero__slides::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.18) 60%, rgba(0, 0, 0, 0.38) 100%);
-  }
-  .hero__inner {
-    position: absolute;
-    left: clamp(16px, 6vw, 96px);
-    bottom: clamp(40px, 9vw, 110px);
-    right: 16px;
-  }
-  .hero__title {
-    color: #fff;
-    font-size: clamp(34px, 6.4vw, 72px);
-    font-weight: 700;
-    line-height: 1.35;
-    letter-spacing: 0.06em;
-    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45), 0 0 2px rgba(0, 0, 0, 0.6);
-  }
-  .hero__sugi {
-    position: absolute;
-    right: clamp(8px, 4vw, 72px);
-    bottom: 0;
-    width: clamp(120px, 20vw, 260px);
-    z-index: 1;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .hero__slide {
-      animation: none;
-      opacity: 0;
-    }
-    .hero__slide:first-child {
-      opacity: 1;
-    }
-  }
-  @media (max-width: 600px) {
-    .hero {
-      height: 68vw;
-      min-height: 380px;
-    }
-    .hero__inner {
-      bottom: 28px;
-      right: 30%;
-    }
-    .hero__title {
-      font-size: 30px;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-    }
-    .hero__sugi {
-      width: 28vw;
-      right: 6px;
-    }
-  }
-  .pc {
-    display: none;
-  }
-  .sp {
-    display: inline;
-  }
-  @media (min-width: 768px) {
-    .pc {
-      display: inline;
-    }
-    .sp {
-      display: none;
-    }
+  /* ヒーロー */
+  .hero { position: relative; min-height: min(88vh, 860px); display: flex; align-items: center; color: var(--c-white); background: var(--c-dark); overflow: hidden; }
+  .hero__img { position: absolute; inset: 0; }
+  .hero__img :global(picture) { height: 100%; }
+  .hero__img :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: 60% 55%; }
+  .hero__img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.72) 0%, rgba(0,0,0,.25) 45%, rgba(0,0,0,.12) 70%, rgba(0,0,0,.5) 100%); }
+  .hero__inner { position: relative; padding-block: clamp(120px, 14vw, 160px) clamp(80px, 10vw, 120px); }
+  .hero__copy { font-size: clamp(36px, 6.4vw, 80px); line-height: 1.25; letter-spacing: .04em; font-weight: 900; text-shadow: 0 2px 24px rgba(0,0,0,.35); }
+  @media (max-width: 768px) {
+    .hero { min-height: 92svh; }
+    .hero__inner { padding-bottom: 64px; }
+      .hero__copy { font-size: clamp(28px, 8.4vw, 34px); letter-spacing: .02em; }
+    .hero__img :global(img) { object-position: 62% 50%; }
   }
 
-  /* ---- menu ---- */
-  .menu__head,
-  .works__head,
-  .flow__head {
-    position: relative;
+  /* NEWS（BUDDICA と同様にリスト型） */
+  .news { padding-block: clamp(36px, 4vw, 56px); }
+  .news__inner { display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: start; }
+  .news__en { font-family: var(--ff-en); font-weight: 700; font-size: clamp(28px, 3vw, 40px); line-height: 1; letter-spacing: .04em; display: block; }
+  .news__ja { font-size: 14px; font-weight: 500; color: var(--c-text-sub); margin-top: 6px; }
+  .news__list li + li { border-top: 1px solid var(--c-line); }
+  .news__item { display: grid; grid-template-columns: auto auto 1fr; align-items: center; gap: 16px; padding: 14px 4px; }
+  .news__item:hover .news__title { color: var(--c-brand-dark); text-decoration: underline; text-underline-offset: 4px; }
+  .news__title { font-size: 15px; font-weight: 500; line-height: 1.6; }
+  .news__more { margin-top: 20px; }
+  @media (max-width: 768px) {
+    .news__inner { grid-template-columns: 1fr; gap: 16px; }
+    .news__item { grid-template-columns: auto auto; }
+    .news__title { grid-column: 1 / -1; }
   }
-  .flow__sugi {
-    position: absolute;
-    right: 0;
-    bottom: -8px;
-    width: clamp(70px, 10vw, 120px);
-  }
-  /* スギトラは最初のカードの上に立ち、下半身はカードの裏に隠れる */
-  /* 画像の幅 190px → 高さ約206px。胸ポケットまで見える位置（約62%）でカードに重ねる */
-  .works__grid-wrap {
-    position: relative;
-    padding-top: 146px;
-  }
-  .works__sugi {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 190px;
-    z-index: 0;
-  }
-  .works__grid {
-    position: relative;
-    z-index: 1;
-  }
-  @media (max-width: 700px) {
-    .flow__head {
-      display: grid;
-      justify-items: center;
-    }
-    .flow__sugi {
-      position: static;
-      width: 84px;
-      margin: -16px 0 4px;
-    }
-    .works__grid-wrap {
-      padding-top: 100px;
-    }
-    .works__sugi {
-      width: 130px;
-      left: 0;
-    }
-  }
-  .menu__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
-  }
-  .menu-card {
-    display: block;
-    border: 1px solid var(--c-gray-line);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    background: #fff;
-    height: 100%;
-    transition: transform 0.2s var(--ease), box-shadow 0.2s;
-  }
-  .menu-card:hover {
-    opacity: 1;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
-  }
-  .menu-card__img {
-    aspect-ratio: 13 / 9;
-    background: var(--c-orange-light);
-    overflow: hidden;
-  }
-  .menu-card__img img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .menu-card__body {
-    position: relative;
-    padding: 30px 18px 18px;
-    display: grid;
-    gap: 6px;
-  }
-  .menu-card__icon {
-    position: absolute;
-    top: -24px;
-    left: 16px;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--c-orange);
-    color: #fff;
-    display: grid;
-    place-items: center;
-    box-shadow: 0 0 0 4px #fff;
-  }
-  .menu-card__icon svg {
-    width: 26px;
-    height: 26px;
-  }
-  .menu-card__name {
-    font-weight: 700;
-    font-size: 18px;
-  }
-  .menu-card__name::after {
-    content: '›';
-    color: var(--c-orange);
-    margin-left: 8px;
-  }
-  .menu-card__lead {
-    font-size: 14px;
-    color: var(--c-muted);
-    line-height: 1.6;
-  }
+
+  /* ABOUT */
+  .about__inner { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 88px); align-items: center; }
+  .about__text p { color: var(--c-text-sub); }
+  .about__visual { position: relative; }
+  .about__visual :global(.about__photo) { border-radius: var(--radius-lg); width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .about__mascot { position: absolute; right: -12px; bottom: -30px; }
   @media (max-width: 900px) {
-    .menu__grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-    .menu-card__body {
-      padding: 26px 12px 14px;
-    }
-    .menu-card__name {
-      font-size: 15px;
-    }
-    .menu-card__lead {
-      font-size: 12px;
-    }
-    .menu-card__icon {
-      width: 40px;
-      height: 40px;
-      top: -20px;
-      left: 10px;
-    }
-    .menu-card__icon svg {
-      width: 22px;
-      height: 22px;
-    }
+    .about__inner { grid-template-columns: 1fr; }
+    .about__visual { order: -1; margin-bottom: 24px; }
+    .about__mascot { right: 4px; bottom: -20px; }
+    .about__mascot :global(.sugitora) { width: 120px !important; }
   }
 
-  /* ---- works ---- */
-  .ba-link {
-    font-weight: 700;
-    color: var(--c-orange-dark);
-    text-decoration: underline;
-  }
-
-  /* ---- reason ---- */
-  .reason__wrap {
-    display: grid;
-    gap: 28px;
-    align-items: center;
-  }
-  .reason__list {
-    display: grid;
-    gap: 16px;
-  }
-  .reason__item {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 16px;
-    background: #fff;
-    border-radius: var(--radius-lg);
-    padding: 20px 22px;
-    border: 1px solid #f5dfc8;
-  }
-  .reason__num {
-    font-family: var(--font-en);
-    font-weight: 700;
-    font-size: 30px;
-    line-height: 1;
-    color: var(--c-orange);
-  }
-  .reason__title {
-    font-size: 18px;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-  .reason__text {
-    font-size: 14px;
-    margin-top: 6px;
-  }
-  .reason__sugi {
-    position: relative;
-    width: clamp(170px, 26vw, 260px);
-    margin-inline: auto;
-  }
-  .reason__bubble {
-    position: absolute;
-    left: -10px;
-    top: -6px;
-    background: #fff;
-    border: 2px solid var(--c-orange);
-    border-radius: 16px;
-    padding: 8px 14px;
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 1.5;
-    white-space: nowrap;
-    transform: translateX(-30%);
-  }
-  .reason__bubble::after {
-    content: '';
-    position: absolute;
-    right: 14px;
-    bottom: -9px;
-    border: 8px solid transparent;
-    border-top-color: var(--c-orange);
-    border-bottom: 0;
-  }
-  @media (min-width: 900px) {
-    .reason__wrap {
-      grid-template-columns: 1fr auto;
-      gap: 48px;
-    }
-    .reason__bubble {
-      transform: none;
-      left: auto;
-      right: 70%;
-      top: 8px;
-    }
-  }
-  @media (max-width: 899px) {
-    .reason__sugi {
-      margin-top: 28px;
-    }
-    .reason__bubble {
-      left: 50%;
-      transform: translateX(-120%);
-    }
-  }
-
-  /* ---- flow ---- */
-  .flow__list {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
-    counter-reset: step;
-  }
-  .flow__step {
-    position: relative;
-    background: #fff;
-    border: 1px solid var(--c-gray-line);
-    border-top: 4px solid var(--c-orange);
-    border-radius: var(--radius);
-    padding: 18px 18px 20px;
-  }
-  .flow__num {
-    display: inline-block;
-    font-family: var(--font-en);
-    font-weight: 700;
-    color: var(--c-orange);
-    font-size: 13px;
-    letter-spacing: 0.1em;
-  }
-  .flow__title {
-    font-size: 17px;
-    font-weight: 700;
-    margin-top: 4px;
-  }
-  .flow__text {
-    font-size: 14px;
-    color: var(--c-muted);
-    margin-top: 6px;
-  }
+  /* SERVICE：写真＋文章の左右分割を交互に */
+  .service__list { display: flex; flex-direction: column; gap: clamp(24px, 3vw, 40px); }
+  .service__link { display: grid; grid-template-columns: 1.1fr 1fr; background: var(--c-white); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--c-line); transition: border-color .2s; }
+  .service__link:hover { border-color: var(--c-brand); color: inherit; }
+  .service__link:hover .service__img :global(img) { transform: scale(1.03); }
+  .service__item:nth-child(even) .service__link { grid-template-columns: 1fr 1.1fr; }
+  .service__item:nth-child(even) .service__img { order: 2; }
+  .service__img { aspect-ratio: 16 / 10; overflow: hidden; background: var(--c-bg-alt); }
+  .service__img :global(img) { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+  .service__body { padding: clamp(24px, 3.5vw, 48px); display: flex; flex-direction: column; justify-content: center; }
+  .service__en { font-family: var(--ff-en); font-weight: 700; font-size: 13px; letter-spacing: .14em; color: var(--c-brand); }
+  .service__title { font-size: clamp(22px, 2.4vw, 30px); margin-top: 6px; }
+  .service__lead { color: var(--c-text-sub); margin: 12px 0 20px; font-size: 15px; }
   @media (max-width: 900px) {
-    .flow__list {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-  }
-  @media (max-width: 520px) {
-    .flow__list {
-      grid-template-columns: 1fr;
-    }
+    .service__link, .service__item:nth-child(even) .service__link { grid-template-columns: 1fr; }
+    .service__item:nth-child(even) .service__img { order: 0; }
   }
 
-  /* ---- company ---- */
-  .company__inner {
-    display: grid;
-    gap: 28px;
-    align-items: center;
-  }
-  .company__photo img {
-    border-radius: var(--radius-lg);
-    width: 100%;
-    height: auto;
-  }
-  .company__name {
-    margin-top: 10px;
-    font-weight: 700;
-    text-align: center;
-  }
-  .company__greeting {
-    font-size: 15px;
-  }
-  .company__dl {
-    margin-top: 18px;
-    border-top: 1px solid var(--c-gray-line);
-    font-size: 14px;
-  }
-  .company__dl > div {
-    display: grid;
-    grid-template-columns: 110px 1fr;
-    gap: 8px;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--c-gray-line);
-  }
-  .company__dl dt {
-    font-weight: 700;
-    color: var(--c-orange-dark);
-  }
-  @media (min-width: 768px) {
-    .company__inner {
-      grid-template-columns: 1fr 1.3fr;
-      gap: 48px;
-    }
+  /* STOCK：暗い背景に大きな車の切り抜き */
+  .stock { position: relative; background: var(--c-dark); color: var(--c-white); overflow: hidden; padding-block: clamp(64px, 8vw, 120px); }
+  .stock__bg { position: absolute; right: max(24px, calc((100% - var(--container)) / 2)); top: 50%; transform: translateY(-50%); width: min(46%, 640px); opacity: .95; pointer-events: none; }
+  .stock__inner { position: relative; }
+  .stock__text { max-width: 480px; }
+  .stock__text p { color: rgba(255,255,255,.85); margin-bottom: 24px; }
+  .stock__en { font-family: var(--ff-en); font-weight: 700; letter-spacing: .14em; color: var(--c-brand); font-size: 14px; }
+  .stock__en::before { content: ''; display: inline-block; width: 28px; height: 3px; background: var(--c-brand); vertical-align: middle; margin-right: 12px; }
+  .stock__ja { font-size: clamp(30px, 4vw, 48px); margin: 8px 0 16px; }
+  .stock__note { font-size: 12px !important; margin-top: 12px !important; color: rgba(255,255,255,.65) !important; }
+  @media (max-width: 900px) {
+    .stock { padding-top: 40px; }
+    .stock__bg { position: static; transform: none; width: min(100%, 560px); margin: 0 auto 8px; }
+    .stock__text .btn { width: 100%; }
   }
 
-  /* ---- news ---- */
-  .news {
-    padding-block: clamp(40px, 6vw, 72px);
-  }
-  .news__inner {
-    display: grid;
-    gap: 16px;
-  }
-  .news__more {
-    text-align: right;
-    margin-top: 12px;
-    font-weight: 700;
-  }
-  .news__more a {
-    color: var(--c-orange-dark);
-    text-decoration: underline;
-  }
-  @media (min-width: 900px) {
-    .news__inner {
-      grid-template-columns: 240px 1fr;
-      gap: 40px;
-    }
+  /* SUPPORT */
+  .support__list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px 32px; }
+  .support__item { display: flex; gap: 14px; padding: 22px 0; border-top: 2px solid var(--c-line); }
+  :global(.support__icon) { width: 24px; height: 24px; flex: none; color: var(--c-brand); margin-top: 3px; }
+  .support__title { font-size: 17px; }
+  .support__text { font-size: 14px; color: var(--c-text-sub); margin-top: 4px; }
+  @media (max-width: 900px) { .support__list { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .support__list { grid-template-columns: 1fr; gap: 0; } }
+
+  /* WORKS */
+  .works__head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+  .works__more { margin-bottom: clamp(32px, 4vw, 56px); flex: none; }
+  @media (max-width: 560px) { .works__head { flex-direction: column; align-items: flex-start; } .works__more { margin: -16px 0 24px; } }
+
+  /* FLOW */
+  .flow__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+  .flow__mascot { flex: none; margin-top: -8px; }
+  .flow__list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: step; }
+  .flow__item { position: relative; padding: 28px 24px 26px; border: 1px solid var(--c-line); border-radius: var(--radius-lg); background: var(--c-white); }
+  .flow__step { font-family: var(--ff-en); font-weight: 700; font-size: 28px; color: var(--c-brand); line-height: 1; letter-spacing: .04em; }
+  .flow__title { font-size: 18px; margin-top: 10px; }
+  .flow__text { font-size: 14px; color: var(--c-text-sub); margin-top: 8px; }
+  @media (max-width: 900px) { .flow__list { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) {
+    .flow__list { grid-template-columns: 1fr; gap: 12px; }
+    .flow__mascot :global(.sugitora) { width: 110px !important; }
+    .flow__item { display: grid; grid-template-columns: auto 1fr; column-gap: 16px; padding: 20px; }
+    .flow__step { grid-row: 1 / 3; }
+    .flow__title { margin-top: 0; }
   }
 
-  /* ---- sns ---- */
-  .sns__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  .sns-card {
-    display: grid;
-    gap: 10px;
-    justify-items: center;
-    text-align: center;
-    padding: 28px 22px 26px;
-    border-radius: var(--radius-lg);
-    color: #fff;
-    transition: transform 0.2s var(--ease);
-  }
-  .sns-card:hover {
-    opacity: 1;
-    transform: translateY(-3px);
-  }
-  .sns-card--line {
-    background: #06c755;
-  }
-  .sns-card--insta {
-    background: #d6338f;
-  }
-  .sns-card--tiktok {
-    background: #222;
-  }
-  .sns-card__icon {
-    display: grid;
-    place-items: center;
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-  }
-  .sns-card__icon svg {
-    width: 34px;
-    height: 34px;
-  }
-  .sns-card__name {
-    font-size: 22px;
-    font-weight: 700;
-  }
-  .sns-card__text {
-    font-size: 14px;
-    opacity: 0.95;
-  }
-  .sns-card__btn {
-    margin-top: 6px;
-    background: #fff;
-    color: var(--c-black);
-    font-weight: 700;
-    font-size: 14px;
-    padding: 10px 20px;
-    border-radius: 999px;
-  }
-  .sns-card--line .sns-card__btn {
-    color: #06903d;
-  }
-  @media (max-width: 800px) {
-    .sns__grid {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-    .sns-card {
-      padding: 22px 18px;
-    }
+  /* FAQ（トップ抜粋） */
+  .faq-top__inner { display: grid; grid-template-columns: 280px 1fr; gap: 48px; align-items: start; }
+  .faq-top__side :global(.faq-top__mascot) { margin-bottom: 24px; }
+  @media (max-width: 900px) {
+    .faq-top__inner { grid-template-columns: 1fr; gap: 16px; }
+    .faq-top__side { display: grid; grid-template-columns: 1fr auto; align-items: center; }
+    .faq-top__side :global(.faq-top__mascot) { width: 96px !important; grid-row: 1 / 3; grid-column: 2; margin: 0; }
   }
 
-  /* ---- faq ---- */
-  .faq__list {
-    display: grid;
-    gap: 12px;
-    max-width: 860px;
-    margin-inline: auto;
-  }
-  .faq__item {
-    background: #fff;
-    border-radius: var(--radius);
-    border: 1px solid #f3ddc6;
-  }
-  .faq__item summary {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 44px 16px 18px;
-    font-weight: 700;
-    cursor: pointer;
-    list-style: none;
-    position: relative;
-  }
-  .faq__item summary::-webkit-details-marker {
-    display: none;
-  }
-  .faq__item summary::after {
-    content: '';
-    position: absolute;
-    right: 18px;
-    top: 50%;
-    width: 10px;
-    height: 10px;
-    border-right: 2px solid var(--c-orange);
-    border-bottom: 2px solid var(--c-orange);
-    transform: translateY(-70%) rotate(45deg);
-    transition: transform 0.2s;
-  }
-  .faq__item[open] summary::after {
-    transform: translateY(-30%) rotate(-135deg);
-  }
-  .faq__q,
-  .faq__a-mark {
-    flex: none;
-    display: inline-grid;
-    place-items: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    font-family: var(--font-en);
-    font-weight: 700;
-    background: var(--c-orange);
-    color: #fff;
-  }
-  .faq__a {
-    display: flex;
-    gap: 12px;
-    padding: 0 18px 18px;
-    font-size: 15px;
-  }
-  .faq__a-mark {
-    background: var(--c-black);
-  }
+  /* ACCESS */
+  .access__inner { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .access__map iframe { width: 100%; aspect-ratio: 4 / 3; border: 0; border-radius: var(--radius-lg); }
+  @media (max-width: 900px) { .access__inner { grid-template-columns: 1fr; } }
 </style>
