@@ -20,7 +20,7 @@ const idx = reformCategories.findIndex((c) => c.slug === cat.slug);
 const works = (await getWorks()).filter((w) => toArray(w.category).includes(cat.worksCategory));
 const baWork = works.find((w) => w.beforeImage && w.afterImage);
 const others = reformCategories.filter((c) => c.slug !== cat.slug);
-const poses = ['omakase', 'peace', 'fists', 'wave', 'kirei', 'bow'] as const;
+const poses = ['omakase', 'welcome', 'fists', 'wave', 'kirei', 'bow'] as const;
 const pose = poses[idx % poses.length];
 ---
 
